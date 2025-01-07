@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/streak_dialog_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:gravity="center"
+        android:paddingBottom="16dp"
+        android:text="Nice Work!"
+        android:fontFamily="@font/adlam_display"
+        android:textColor="@color/black"
+        android:textSize="28sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <!-- Medal Icon -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="250dp">
+
+            <!-- SVG Icon -->
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_medal"
+               />
+
+            <!-- Text Overlay -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingBottom="70dp"
+                android:gravity="center">
+
+                <!-- Number -->
+                <TextView
+                    android:id="@+id/streak_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/adlam_display"
+                    android:text="1"
+                    android:textColor="#260259"
+
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
+
+                <!-- Days -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="days"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/adlam_display"
+                  />
+            </LinearLayout>
+        </FrameLayout>
+    </LinearLayout>
+
+    <!-- Message -->
+    <TextView
+        android:id="@+id/streak_dialog_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:paddingBottom="24dp"
+        android:fontFamily="@font/adlam_display"
+        android:text="You're on a streak, keep it going"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <!-- Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:weightSum="2">
+
+        <!-- Cancel Button -->
+
+        <!-- Confirm Button -->
+        <Button
+            android:id="@+id/collect_points_button"
+            android:layout_width="230dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/purple_500"
+            android:padding="8dp"
+            android:text="Collect Points"
+            android:fontFamily="@font/adlam_display"
+            android:textColor="@color/white" />
+    </LinearLayout>
+</LinearLayout>

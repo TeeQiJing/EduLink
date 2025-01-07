@@ -1,0 +1,13 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="30dp"
+    android:height="25dp"
+    android:viewportWidth="100"
+    android:viewportHeight="100">
+
+    <!-- Hexagon shape with a bold white border -->
+    <path
+        android:fillColor="#FFC107"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="8"
+    android:pathData="M50,5 L85,25 L85,75 L50,95 L15,75 L15,25 Z" />
+</vector>

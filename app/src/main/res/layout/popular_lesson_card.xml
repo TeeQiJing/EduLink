@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/popular_card_view"
+    android:layout_marginLeft="10dp"
+    android:layout_marginBottom="10dp">
+
+    <RelativeLayout
+        android:layout_width="180dp"
+        android:layout_height="195dp"
+        android:id="@+id/popular_card_view_RelLayout"
+        android:background="@drawable/lesson_card_background">
+
+        <ImageView
+            android:id="@+id/popular_lesson_image"
+            android:layout_width="match_parent"
+            android:layout_height="122dp"
+            android:layout_alignParentTop="true"
+            android:src="@drawable/lesson_image" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/popular_lesson_level"
+            android:text="Intermediate"
+            android:fontFamily="@font/roboto"
+            android:textStyle="bold"
+            android:textSize="14dp"
+            android:background="@drawable/lesson_level_background"
+            android:layout_alignTop="@id/popular_lesson_image" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/popular_lesson_title"
+            android:text="Java Programming Class Hey"
+            android:fontFamily="@font/roboto"
+            android:textSize="14dp"
+            android:layout_below="@id/popular_lesson_image"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="8dp"/>
+
+        <ImageView
+            android:id="@+id/star"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_star"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="12dp"
+            android:layout_marginLeft="120dp"/>
+
+        <TextView
+            android:id="@+id/ratings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4.9"
+            android:fontFamily="@font/roboto"
+            android:textColor="#9A9A9A"
+            android:textSize="13dp"
+            android:layout_toRightOf="@id/star"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="12dp"
+            android:layout_marginLeft="2dp" />
+
+    </RelativeLayout>
+
+</com.google.android.material.card.MaterialCardView>

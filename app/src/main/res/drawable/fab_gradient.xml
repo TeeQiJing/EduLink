@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="20dp" /> <!-- Adjust radius as needed -->
+            <gradient
+                android:startColor="#7512FF"
+                android:centerColor="#3978FF"
+                android:endColor="#94BBE9"
+                android:angle="-45"
+                android:type="linear"/>
+        </shape>
+    </item>
+    <item
+        android:drawable="@drawable/ic_add"
+        android:gravity="center"
+        android:width="24dp"
+        android:height="24dp">
+    </item>
+</layer-list>

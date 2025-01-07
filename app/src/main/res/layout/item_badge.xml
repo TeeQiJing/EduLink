@@ -1,0 +1,33 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!-- Medal Icon -->
+    <FrameLayout
+        android:id="@+id/frame"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:background="@color/white">  <!-- Set a fixed height for the FrameLayout -->
+
+        <!-- SVG Icon -->
+        <ImageView
+            android:id="@+id/badges_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_badges1" />
+
+        <!-- Text Overlay -->
+        <TextView
+            android:id="@+id/badges_dialog_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="39dp"
+            android:fontFamily="@font/adlam_display"
+            android:gravity="center"
+            android:text="Badges Title"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+    </FrameLayout>
+</LinearLayout>

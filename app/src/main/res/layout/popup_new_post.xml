@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/popup_background"
+    android:padding="16dp">
+
+    <!-- Exit Button -->
+
+    <ImageButton
+        android:id="@+id/popup_exit"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:background="#FFFFFF"
+        android:contentDescription="Exit"
+        android:paddingLeft="16dp"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/ic_exit" />
+
+    <!-- Title Input -->
+
+    <TextView
+        android:id="@+id/popup_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/popup_exit"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="8dp"
+        android:fontFamily="sans-serif-black"
+        android:text="Share something!"
+        android:textSize="24sp" />
+
+    <EditText
+        android:id="@+id/popup_post_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/popup_title"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/edittext_border"
+        android:hint="Enter Title"
+        android:outlineProvider="bounds"
+        android:padding="12dp"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <!-- Content Input -->
+    <EditText
+        android:id="@+id/popup_post_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/popup_post_title"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/edittext_border"
+        android:gravity="top"
+        android:hint="Write something..."
+        android:inputType="textMultiLine"
+        android:lines="5"
+        android:padding="12dp"
+        android:textSize="16sp" />
+
+    <!-- Post Button -->
+    <Button
+        android:id="@+id/popup_post"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/popup_post_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:text="Post"
+        android:textColor="@color/white"
+        app:backgroundTint="@null"
+        android:background="@drawable/button_gradient"
+        android:textStyle="bold" />
+
+</RelativeLayout>
