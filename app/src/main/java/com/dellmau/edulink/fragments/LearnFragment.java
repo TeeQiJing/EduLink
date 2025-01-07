@@ -21,7 +21,7 @@ import com.dellmau.edulink.R;
 import com.dellmau.edulink.adapters.CurrentLessonCardAdapter;
 import com.dellmau.edulink.adapters.PopularLessonCardAdapter;
 import com.dellmau.edulink.models.CurrentLessonCard;
-import com.dellmau.edulink.models.User;
+import com.dellmau.edulink.models.Student;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.search.SearchBar;
@@ -269,14 +269,14 @@ public class LearnFragment extends Fragment {
             if (task.isSuccessful()) {
                 DocumentSnapshot documentSnapshot = task.getResult();
                 if (documentSnapshot != null && documentSnapshot.exists()) {
-                    User user = documentSnapshot.toObject(User.class);
+                    Student user = documentSnapshot.toObject(Student.class);
                     if (user != null) {
                         greeting.setText("Hi, " + user.getUsername());
 
                         // Safely handle the avatar field
 
                     }else {
-                        greeting.setText("Hi, User");
+                        greeting.setText("Hi, Student");
                     }
                 } else {
                     Log.e("LearnFragment", "Document does not exist or is null");

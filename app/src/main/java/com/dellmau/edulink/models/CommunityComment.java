@@ -79,7 +79,7 @@ public class CommunityComment {
 
     // Fetch username and avatar from the 'users' collection
     public void fetchUserDetails(FirebaseFirestore db, UserDetailsCallback callback) {
-        Log.d("User ID", commentUserID);
+        Log.d("Student ID", commentUserID);
         db.collection("users").document(commentUserID)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -88,7 +88,7 @@ public class CommunityComment {
                         this.avatarURL = documentSnapshot.getString("avatar");
                         if (callback != null) callback.onSuccess(username, avatarURL);
                     } else {
-                        if (callback != null) callback.onFailure(new Exception("User not found"));
+                        if (callback != null) callback.onFailure(new Exception("Student not found"));
                     }
                 })
                 .addOnFailureListener(callback::onFailure);

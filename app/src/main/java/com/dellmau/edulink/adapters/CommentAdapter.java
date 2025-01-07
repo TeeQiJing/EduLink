@@ -50,7 +50,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
 
             @Override
             public void onFailure(Exception e) {
-                holder.usernameComment.setText("Unknown User");
+                holder.usernameComment.setText("Unknown Student");
                 holder.avatarComment.setImageResource(R.drawable.gradient_background);
             }
         });

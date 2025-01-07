@@ -61,7 +61,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Post
 
             @Override
             public void onFailure(Exception e) {
-                holder.username.setText("Unknown User");
+                holder.username.setText("Unknown Student");
                 holder.avatar.setImageResource(R.drawable.gradient_background);
             }
         });

@@ -22,7 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.dellmau.edulink.R;
-import com.dellmau.edulink.models.User;
+import com.dellmau.edulink.models.Student;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -197,7 +197,7 @@ public class SettingsFragment extends Fragment {
 
         String email = mAuth.getCurrentUser().getEmail();
         if (email == null) {
-            Toast.makeText(getContext(), "User email not found.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Student email not found.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -235,7 +235,7 @@ public class SettingsFragment extends Fragment {
             if (task.isSuccessful()) {
                 DocumentSnapshot documentSnapshot = task.getResult();
                 if (documentSnapshot != null && documentSnapshot.exists()) {
-                    User user = documentSnapshot.toObject(User.class);
+                    Student user = documentSnapshot.toObject(Student.class);
                     if (user != null) {
                         etUsername.setText(user.getUsername());
                         etBio.setText(user.getUser_bio().isEmpty() ? "" : user.getUser_bio());
