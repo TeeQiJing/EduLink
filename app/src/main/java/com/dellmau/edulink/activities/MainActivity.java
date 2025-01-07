@@ -11,6 +11,7 @@ import com.dellmau.edulink.R;
 import com.dellmau.edulink.databinding.ActivityMainBinding;
 import com.dellmau.edulink.fragments.ChatFragment;
 import com.dellmau.edulink.fragments.CommunityFragment;
+import com.dellmau.edulink.fragments.CompanyFragment;
 import com.dellmau.edulink.fragments.ContentFragment;
 import com.dellmau.edulink.fragments.LeaderboardFragment;
 import com.dellmau.edulink.fragments.LearnFragment;
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private ChatFragment chatFragment;
     private LessonFragment lessonFragment;
     private ContentFragment contentFragment;
+    private CompanyFragment companyFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         // Initialize fragments
+        companyFragment = new CompanyFragment();
         profileFragment = new ProfileFragment();
         learnFragment = new LearnFragment();
 //        ChapterFragment chapterFragment = new ChapterFragment();
@@ -51,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         contentFragment = new ContentFragment();
 
         // Load the default fragment
-        loadFragment(learnFragment);
+        loadFragment(communityFragment);
 
 
         // Handle BottomNavigation item clicks
