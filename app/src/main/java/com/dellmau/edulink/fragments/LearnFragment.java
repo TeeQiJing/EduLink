@@ -81,11 +81,11 @@ public class LearnFragment extends Fragment {
         currentRecView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
 
         Log.d("LearnFragment", "RecyclerView set up with adapter.");
-        fetchCurrentLessonData();
+//        fetchCurrentLessonData();
 
         Log.d("learnFragment", currentLessonId.toString());
 
-        loadUserProfile();
+//        loadUserProfile();
 
         //Popular Lesson
         popularLessonCards = new ArrayList<>();
@@ -94,7 +94,7 @@ public class LearnFragment extends Fragment {
         popularRecView.setAdapter(popularLessonCardAdapter);
         popularRecView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         // Check login streak and show dialog
-        checkAndShowLoginStreakDialog();
+//        checkAndShowLoginStreakDialog();
 
         searchBar = view.findViewById(R.id.search_bar);
         SearchLesson searchLesson = new SearchLesson();
