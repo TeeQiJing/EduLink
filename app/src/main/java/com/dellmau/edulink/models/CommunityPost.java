@@ -19,14 +19,22 @@ public class CommunityPost implements Serializable {
     private List<CommunityComment> commentList;
     private String username;
     private String avatarURL; // Base64 String for the avatar
+    private String lecturerSkills;
+    private String studentSkills;
+    private String startDate;
+    private String endDate;
 
-    public CommunityPost(String userID, String title, String content, long timestamp, List<String> likedBy) {
+    public CommunityPost(String userID, String title, String content, long timestamp, List<String> likedBy, String lecturerSkills, String studentSkills, String startDate, String endDate) {
         this.userID = userID;
         this.title = title;
         this.content = content;
         this.timestamp = timestamp;
         this.likedBy = likedBy != null ? likedBy : new ArrayList<>();
         this.commentList = new ArrayList<>();
+        this.lecturerSkills = lecturerSkills;
+        this.studentSkills = studentSkills;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
     public String getPostID(){
@@ -57,6 +65,21 @@ public class CommunityPost implements Serializable {
         return commentList;
     }
 
+    public String getLecturerSkills() {
+        return lecturerSkills;
+    }
+
+    public String getStudentSkills() {
+        return studentSkills;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
 
     // Save the CommunityPost to Firestore
     public void saveToFirebase(FirebaseFirestore db, SaveCallback callback) {
@@ -66,6 +89,10 @@ public class CommunityPost implements Serializable {
         post.put("content", content);
         post.put("timestamp", timestamp);
         post.put("likedBy", likedBy);
+        post.put("lecturerSkills",lecturerSkills);
+        post.put("studentSkills",studentSkills);
+        post.put("startDate",startDate);
+        post.put("endDate",endDate);
 
         db.collection("community")
                 .add(post) // This adds the post and generates a unique document ID

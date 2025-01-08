@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:layout_marginBottom="8dp"
     android:background="@color/white"
     android:elevation="2dp"
@@ -85,11 +85,12 @@
         android:textSize="16sp" />
 
     <!-- Post Actions -->
+
     <LinearLayout
         android:id="@+id/like_comment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/post_content"
+        android:layout_below="@id/submissionLink"
         android:layout_marginTop="8dp"
         android:orientation="horizontal"
         android:paddingLeft="30dp"
@@ -144,41 +145,48 @@
 
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_comments"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/input_section"
-        android:layout_below="@id/like_comment"
-        android:nestedScrollingEnabled="true"
-        tools:listitem="@layout/item_comment" />
 
     <LinearLayout
-        android:id="@+id/input_section"
+        android:id="@+id/submission"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="@color/white"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="8dp">
+        android:layout_below="@id/post_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/input_comment"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginEnd="10dp"
-            android:layout_weight="1"
-            android:hint="Enter your comment..."
-            android:padding="8dp" />
-
-        <Button
-            android:id="@+id/btn_send_comment"
+        <TextView
+            android:id="@+id/textView13"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/button_gradient"
-            android:text="Send"
-            app:backgroundTint="@null" />
+            android:layout_below="@id/post_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginLeft="30dp"
+            android:text="Submission:"
+            android:textSize="20dp" />
+
+        <EditText
+            android:id="@+id/forSubmit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/edittext_border"
+            android:ems="10"
+            android:inputType="text"
+            android:padding="12dp"
+            android:text="Name" />
+
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/submissionLink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/submission"
+        android:layout_marginLeft="30dp"
+        android:text="TextView"
+        android:textSize="20dp" />
 
 </RelativeLayout>
