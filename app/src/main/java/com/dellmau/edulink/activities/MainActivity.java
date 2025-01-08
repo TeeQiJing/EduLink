@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         courseOutlineFragment = new CourseOutlineFragment();
 
         // Load the default fragment
-        loadFragment(courseOutlineFragment);
+        loadFragment(companyFragment);
 
 
         // Handle BottomNavigation item clicks

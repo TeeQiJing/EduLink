@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,9 +54,10 @@ public class CompanyFragment extends Fragment {
     private ArrayList<CollectionReference> collections;
     private TextView greeting;
     private SearchBar searchBar;
-
-    private SharedPreferences sharedPreferences;
-    private String user_role;
+    String userId;
+    SharedPreferences sharedPreferences;
+    String user_role;
+    ImageView logo;
 
 
     public CompanyFragment() {
@@ -73,6 +75,10 @@ public class CompanyFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_company, container, false);
         greeting = rootView.findViewById(R.id.company_greeting);
+        mAuth = FirebaseAuth.getInstance();
+        userId = mAuth.getCurrentUser().getUid();
+        sharedPreferences = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+        user_role = sharedPreferences.getString("user_role", "");
         return rootView;
     }
 
@@ -84,7 +90,8 @@ public class CompanyFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         collections = new ArrayList<>(Arrays.asList(db.collection("employer"), db.collection("educator"), db.collection("student")));
 
-
+//
+        logo = view.findViewById(R.id.icNotification);
         collaborations = new ArrayList<>();
         companyAdapter = new CompanyAdapter(requireActivity().getSupportFragmentManager());
         recView = view.findViewById(R.id.company_rec_view);
@@ -98,8 +105,7 @@ public class CompanyFragment extends Fragment {
         user_role = sharedPreferences.getString("user_role", "");
 
 
-//        loadUserProfile();
-
+        searchLogo();
 
         // Check login streak and show dialog
         checkAndShowLoginStreakDialog();
@@ -117,6 +123,66 @@ public class CompanyFragment extends Fragment {
             }
         });
     }
+
+    public void searchLogo() {
+        db.collection(user_role.toLowerCase()).document(userId)
+            .get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot documentSnapshot = task.getResult();
+                if (documentSnapshot != null && documentSnapshot.exists()) {
+                    if (user_role.equals("Student")) {
+                        Student student = documentSnapshot.toObject(Student.class);
+                        setLogo(student.getOrganization().getId());
+                    }
+                    else if (user_role.equals("Educator")) {
+                        Educator educator = documentSnapshot.toObject(Educator.class);
+                        setLogo(educator.getOrganization().getId());
+                    }
+                    else if (user_role.equals("Employer")) {
+                        Employer employer = documentSnapshot.toObject(Employer.class);
+                        setLogo(employer.getOrganization().getId());
+                    }
+                } else {
+                    Log.e("LearnFragment", "Document does not exist or is null");
+                    Toast.makeText(getContext(), "Profile not found", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Log.e("LearnFragment", "Error fetching user profile", task.getException());
+                Toast.makeText(getContext(), "Failed to load profile", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void setLogo(String id) {
+        switch (id) {
+            case "SdXmI3InPYJIvFbyHf9l":
+                logo.setImageResource(R.drawable.ic_um);
+                break;
+            case "5jAiY2F9GadXjgjIMaO2":
+                logo.setImageResource(R.drawable.ic_mmu);
+                break;
+            case "RsOfyDAyD7Grv0MQXh57":
+                logo.setImageResource(R.drawable.ic_upm);
+                break;
+            case "lvl4zg3V5SOIrLaIwC1s":
+                logo.setImageResource(R.drawable.ic_ukm);
+                break;
+            case "yWZ0D8LGf4X6bn2TfI3I":
+                logo.setImageResource(R.drawable.ic_uum);
+                break;
+            case "v2L6rcAEXhp3uWIRPdgN":
+                logo.setImageResource(R.drawable.ic_asus);
+                break;
+            case "vUPy8l4p04v2jteJH1UO":
+                logo.setImageResource(R.drawable.ic_acer);
+                break;
+            case "viG5aDKucYHAjTHqIm5U":
+                logo.setImageResource(R.drawable.ic_uum);
+                break;
+        }
+    }
+
+
 
     private void fetchData() {
         // Get the current user ID
@@ -145,9 +211,17 @@ public class CompanyFragment extends Fragment {
                                     fetchDetails(company);
                                 }
                                 else if (index == 0 && document.getId().equals(userId)) {
-                                    loadUserProfile(document.toObject(Employer.class));
-                                    DocumentReference company = document.getDocumentReference("organization");
-                                    fetchDetails(company);
+//                                    loadUserProfile(document.toObject(Employer.class));
+                                    String company = document.getDocumentReference("organization").getId();
+//                                    fetchDetails(company);
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("key", company);
+                                    LearnFragment learnFragment = new LearnFragment();
+                                    learnFragment.setArguments(bundle);
+                                        requireActivity().getSupportFragmentManager()
+                                                .beginTransaction()
+                                                .replace(R.id.fragment_container, learnFragment)
+                                                .commit();
                                 }
                             }
                         } else {
