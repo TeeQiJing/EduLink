@@ -234,7 +234,7 @@ public class SettingsFragment extends Fragment {
 
     private void loadUserProfile() {
         String userId = mAuth.getCurrentUser().getUid();
-        DocumentReference userDocRef = db.collection("users").document(userId);
+        DocumentReference userDocRef = db.collection(user_role.toLowerCase()).document(userId);
 
         // Fetch user details
         userDocRef.get().addOnCompleteListener(task -> {

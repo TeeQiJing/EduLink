@@ -76,7 +76,7 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
 //         Pass the lesson ID as a fresh argument to the fragment
         Bundle bundle = new Bundle();
         bundle.putString("key", collaboration.getCompany().getId()); // Use the lesson ID for the new lesson
-
+        Log.d("CompanyAdapter", "Key: " + collaboration.getCompany().getId());
 
         LearnFragment learnFragment = new LearnFragment();
         learnFragment.setArguments(bundle);

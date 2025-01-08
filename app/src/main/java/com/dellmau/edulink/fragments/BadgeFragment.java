@@ -1,5 +1,7 @@
 package com.dellmau.edulink.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -29,6 +31,8 @@ public class BadgeFragment extends Fragment {
     private RecyclerView recyclerView;
     private BadgeAdapter adapter;
     private List<String> badgeNames = new ArrayList<>();
+    String user_role;
+    SharedPreferences sharedPreferences;
 
     public BadgeFragment() {
         // Required empty public constructor
@@ -39,6 +43,8 @@ public class BadgeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+        sharedPreferences = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+        user_role = sharedPreferences.getString("user_role", "");
     }
 
     @Override
@@ -64,7 +70,7 @@ public class BadgeFragment extends Fragment {
     private void fetchBadges() {
         String userId = mAuth.getCurrentUser().getUid();
         db.collection("user_badges")
-                .whereEqualTo("userIdRef", db.collection("users").document(userId))
+                .whereEqualTo("userIdRef", db.collection(user_role.toLowerCase()).document(userId))
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {

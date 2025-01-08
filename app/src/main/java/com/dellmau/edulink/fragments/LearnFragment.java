@@ -74,6 +74,7 @@ public class LearnFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         key = getArguments().getString("key");
+        Log.d("LearnFragment", "Key: " + key);
         currentLessonId = new ArrayList<>();
 
         db = FirebaseFirestore.getInstance();

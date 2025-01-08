@@ -49,11 +49,11 @@ public class ProfileFragment extends Fragment {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private TextView tvUsername ;
-    private LinearLayout btnCertificate, btnFeedback, btnSettings, btnLogout, btnBadge;
+    private LinearLayout btnSettings, btnLogout, btnBadge, btnCertificate;
 
      String user_role;
-    private SharedPreferences sharedPreferences;
-    private String UID;
+    SharedPreferences sharedPreferences;
+    String UID;
 
     FrameLayout radarFragmentContainer;
 
@@ -78,6 +78,7 @@ public class ProfileFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
 
+
         // Initialize views
         avatarImageView = rootView.findViewById(R.id.profileImage);
         tvUsername = rootView.findViewById(R.id.tvUsername);
@@ -88,7 +89,7 @@ public class ProfileFragment extends Fragment {
         btnSettings = rootView.findViewById(R.id.btnSettings);
         btnLogout = rootView.findViewById(R.id.btnLogout);
 //        tvBadge = rootView.findViewById(R.id.tvBadge);
-//        btnBadge = rootView.findViewById(R.id.btnBadges);
+        btnBadge = rootView.findViewById(R.id.btnBadges);
 
         // Retrieve user_role from SharedPreferences
 
@@ -110,36 +111,6 @@ public class ProfileFragment extends Fragment {
         // Set click listeners
         avatarImageView.setOnClickListener(v -> openImagePicker());
         btnCertificate.setOnClickListener(v -> navigateToCertificate());
-//        btnFeedback.setOnClickListener(v -> {
-//            // Create a new bundle to pass data to the FeedbackFragment
-//            Bundle bundle = new Bundle();
-//            bundle.putString("user_role", user_role); // Example: Pass a string. Replace with your actual data.
-//
-//            // Create an instance of FeedbackFragment
-//            FeedbackFragment feedbackFragment = new FeedbackFragment();
-//
-//            // Set the bundle as arguments for the fragment
-//            feedbackFragment.setArguments(bundle);
-//
-//            // Begin the fragment transaction
-//            requireActivity().getSupportFragmentManager()
-//                    .beginTransaction()
-//                    .setCustomAnimations(
-//                            R.anim.slide_in_right,  // Animation for fragment entry
-//                            R.anim.slide_out_left, // Animation for fragment exit
-//                            R.anim.slide_in_left,  // Animation for returning to the fragment
-//                            R.anim.slide_out_right // Animation for exiting back
-//                    )
-//                    .replace(R.id.fragment_container, feedbackFragment) // Replace `fragment_container` with your container ID
-//                    .addToBackStack(null)
-//                    .commit();
-//        });
-
-        if(user_role.equals("Student")){
-            btnBadge.setVisibility(View.VISIBLE);
-        }else{
-            btnBadge.setVisibility(View.GONE);
-        }
         btnBadge.setOnClickListener(v -> checkAndNavigate());
         btnSettings.setOnClickListener(v -> {
                     requireActivity().getSupportFragmentManager()
@@ -163,7 +134,7 @@ public class ProfileFragment extends Fragment {
     private void checkAndNavigate() {
         String userId = mAuth.getCurrentUser().getUid();
         db.collection("user_badges")
-                .whereEqualTo("userIdRef", db.collection("student").document(userId))
+                .whereEqualTo("userIdRef", db.collection(user_role.toLowerCase()).document(userId))
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -220,7 +191,7 @@ public class ProfileFragment extends Fragment {
             if (task.isSuccessful()) {
                 DocumentSnapshot documentSnapshot = task.getResult();
                 if (documentSnapshot != null && documentSnapshot.exists()) {
-                    if(user_role.equals("Student")){
+                    if("Student".equals(user_role)){
                         Student user = documentSnapshot.toObject(Student.class);
                         if (user != null) {
                             tvUsername.setText(user.getUsername());
@@ -240,7 +211,7 @@ public class ProfileFragment extends Fragment {
                             // Fetch number of courses
 //                                fetchCoursesCount(UID);
                         }
-                    }else if(user_role.equals("Educator")){
+                    }else if("Educator".equals(user_role)){
                         Educator user = documentSnapshot.toObject(Educator.class);
                         if (user != null) {
                             tvUsername.setText(user.getUsername());
@@ -259,7 +230,7 @@ public class ProfileFragment extends Fragment {
                             // Fetch number of courses
 //                                fetchCoursesCount(UID);
                         }
-                    }else if(user_role.equals("Employer")){
+                    }else if("Employer".equals(user_role)){
                         Employer user = documentSnapshot.toObject(Employer.class);
                         if (user != null) {
                             tvUsername.setText(user.getUsername());
@@ -393,8 +364,17 @@ public class ProfileFragment extends Fragment {
     }
 
     private void navigateToCertificate() {
-        // Implement navigation to certificate activity or fragment
-        Toast.makeText(getContext(), "Navigating to Certificate", Toast.LENGTH_SHORT).show();
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(
+                        R.anim.slide_in_right,  // Animation for fragment entry
+                        R.anim.slide_out_left, // Animation for fragment exit
+                        R.anim.slide_in_left,  // Animation for returning to the fragment
+                        R.anim.slide_out_right // Animation for exiting back
+                )
+                .replace(R.id.fragment_container, new CertFragment()) // Replace `fragment_container` with your container ID
+                .addToBackStack(null)
+                .commit();
     }
 
     private void showLogoutConfirmationDialog() {
