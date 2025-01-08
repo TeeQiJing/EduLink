@@ -84,8 +84,8 @@ public class QuizFragment extends Fragment {
         if (quizId != null && userId != null) {
             loadQuizData(quizId);
         } else {
-            Log.e(TAG, "Quiz ID or User ID is missing");
-            Toast.makeText(getContext(), "Quiz ID or User ID is missing", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "Quiz ID or Student ID is missing");
+            Toast.makeText(getContext(), "Quiz ID or Student ID is missing", Toast.LENGTH_SHORT).show();
         }
 
         // Handle navigation buttons
@@ -263,7 +263,7 @@ public class QuizFragment extends Fragment {
     private void quitToPreviousFragment() {
         Log.d(TAG, "Navigating back to previous fragment and saving quiz progress.");
         if (quizId == null || userId == null) {
-            Log.e(TAG, "Quiz ID or User ID is missing. Cannot update quiz progress.");
+            Log.e(TAG, "Quiz ID or Student ID is missing. Cannot update quiz progress.");
             return;
         }
 
@@ -443,7 +443,7 @@ public class QuizFragment extends Fragment {
                     // Increment XP by the score of the current question
                     transaction.update(userRef, "xp", currentXP + score);
                     return null;
-                }).addOnSuccessListener(aVoid -> Log.d(TAG, "User XP incremented by " + score + " successfully."))
+                }).addOnSuccessListener(aVoid -> Log.d(TAG, "Student XP incremented by " + score + " successfully."))
                 .addOnFailureListener(e -> Log.e(TAG, "Failed to increment user XP", e));
     }
 

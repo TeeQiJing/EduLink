@@ -8,27 +8,11 @@
     android:background="@drawable/gradient_background"
     android:id="@+id/searchLessonFragment">
 
-    <ImageView
-        android:id="@+id/arrow"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/ic_back2"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"/>
 
-    <TextView
-        android:id="@+id/search_company_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Search Lesson"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="13dp"
-        android:textSize="28dp"
-        android:textColor="@color/white"/>
 
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/search_container"
+        android:id="@+id/search_company_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
@@ -39,7 +23,7 @@
         android:layout_below="@id/arrow">
 
         <SearchView
-            android:id="@+id/search_post"
+            android:id="@+id/search_company_post"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="4dp"
@@ -55,24 +39,42 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/result"
+        android:id="@+id/company_result"
         android:text="No Result Found"
         android:textColor="@color/white"
         android:fontFamily="@font/roboto"
         android:textSize="20dp"
         android:textStyle="bold"
-        android:layout_below="@id/search_container"
+        android:layout_below="@id/search_company_container"
         android:layout_marginLeft="20dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/result_rec_view"
+        android:id="@+id/company_result_rec_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/result"
+        android:layout_below="@id/company_result"
         android:layout_marginTop="10dp"
         android:clipToPadding="false"
         android:paddingRight="10dp"
         android:paddingLeft="10dp"/>
+
+    <ImageView
+        android:id="@+id/arrow"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_back2"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:id="@+id/search_company_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search Company"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="13dp"
+        android:textSize="28dp"
+        android:textColor="@color/white"/>
 
 
 </RelativeLayout>

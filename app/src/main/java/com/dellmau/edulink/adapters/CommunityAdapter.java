@@ -61,7 +61,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Post
 
             @Override
             public void onFailure(Exception e) {
-                holder.username.setText("Unknown User");
+                holder.username.setText("Unknown Student");
                 holder.avatar.setImageResource(R.drawable.gradient_background);
             }
         });
@@ -70,6 +70,8 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Post
         holder.postTitle.setText(post.getTitle());
         holder.postContent.setText(post.getContent());
         holder.postLikes.setText(String.valueOf(post.getLikedBy().size()));
+        holder.lecturerSkillTV.setText(post.getLecturerSkills());
+        holder.studentSkillTV.setText(post.getStudentSkills());
 
         String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -152,7 +154,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Post
     }
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
-        TextView username, postTime, postTitle, postContent;
+        TextView username, postTime, postTitle, postContent,lecturerSkillTV,studentSkillTV;
         public Button postLikes;
         Button postComments;
         ImageView avatar,likeOverlayIcon;
@@ -168,6 +170,8 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Post
             postComments = itemView.findViewById(R.id.post_comments);
             avatar = itemView.findViewById(R.id.post_user_avatar);
             likeOverlayIcon = itemView.findViewById(R.id.ic_liked);
+            lecturerSkillTV = itemView.findViewById(R.id.lecturerSkillTV);
+            studentSkillTV = itemView.findViewById(R.id.studentSkillTV);
         }
     }
 

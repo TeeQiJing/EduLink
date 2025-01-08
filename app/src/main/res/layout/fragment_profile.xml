@@ -87,77 +87,59 @@
             <!--                android:padding="4dp"-->
             <!--                android:layout_marginTop="4dp"-->
             <!--               />-->
-            <FrameLayout
-                android:id="@+id/badgeContainer"
-
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_margin="8dp"
-                android:padding="5dp"
-                android:layout_weight="1"
-                >
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="20dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/ic_hexagon" />
-
-                <TextView
-                    android:id="@+id/tvBadge"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text=""
-
-                    android:textColor="@android:color/white"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </FrameLayout>
+              <!-- Radar Chart -->
+              <FrameLayout
+                  android:id="@+id/radarFragmentContainer"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  />
 
 
             <!-- Total Points -->
-            <TextView
-                android:id="@+id/tvPoints"
-                android:layout_marginStart="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:gravity="center"
-                android:layout_weight="1"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                />
+<!--            <TextView-->
+<!--                android:id="@+id/tvPoints"-->
+<!--                android:layout_marginStart="10dp"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text=""-->
+<!--                android:gravity="center"-->
+<!--                android:layout_weight="1"-->
+<!--                android:textColor="#FFFFFF"-->
+<!--                android:textSize="14sp"-->
+<!--                />-->
 
-            <!-- Courses Enrolled -->
-            <TextView
-                android:id="@+id/tvCourses"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:text=""
-                android:layout_marginEnd="40dp"
-                android:gravity="center"
-                android:textColor="#FFFFFF"
-                android:layout_weight="1"
-                android:textSize="14sp" />
+<!--            &lt;!&ndash; Courses Enrolled &ndash;&gt;-->
+<!--            <TextView-->
+<!--                android:id="@+id/tvCourses"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="20dp"-->
+<!--                android:text=""-->
+<!--                android:layout_marginEnd="40dp"-->
+<!--                android:gravity="center"-->
+<!--                android:textColor="#FFFFFF"-->
+<!--                android:layout_weight="1"-->
+<!--                android:textSize="14sp" />-->
         </LinearLayout>
 
-        <!-- Menu Options (Vertical LinearLayout inside ConstraintLayout) -->
-        <LinearLayout
-            android:id="@+id/menuOptions"
+        <!-- Scrollable Menu Options -->
+        <ScrollView
+            android:id="@+id/scrollMenuOptions"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="20dp"
-            android:background="@drawable/curve_border_background"
-            android:orientation="vertical"
-            android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/pointsAndCoursesSection">
+            app:layout_constraintTop_toBottomOf="@id/pointsAndCoursesSection"
+        android:background="@drawable/curve_border_background"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:id="@+id/menuOptions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp">
 
             <!-- Certificate -->
             <LinearLayout
@@ -286,6 +268,7 @@
                     android:textSize="16sp" />
             </LinearLayout>
         </LinearLayout>
+        </ScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

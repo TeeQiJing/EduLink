@@ -27,12 +27,34 @@
     <string name="submit">Submit</string>
     <string name="default_web_client_id">892989105581-8mugpktlflf0f4uv5qc6d5rokndq3vpp.apps.googleusercontent.com</string>
 
+    <string name="user_role">User Role</string>
     <string-array name="feedback_types">
         <item>General Feedback</item>
         <item>Bug Report</item>
         <item>Feature Request</item>
         <item>Suggestion</item>
         <item>Other</item>
+    </string-array>
+    <string-array name="lecturer_skills_array">
+        <item>Risk Management</item>
+        <item>Adaptability</item>
+        <item>Team Leadership</item>
+        <item>Industry Knowledge</item>
+        <item>Project Management</item>
+    </string-array>
+    <string-array name="student_skills_array">
+        <item>UI/UX Design</item>
+        <item>Backend</item>
+        <item>Creativity</item>
+        <item>Code Simplicity</item>
+        <item>Problem-Solving</item>
+    </string-array>
+
+    <string-array name="user_role_options">
+        <item>Please Select Your Role</item>
+        <item>Student</item>
+        <item>Educator</item>
+        <item>Employer</item>
     </string-array>
 
 </resources>

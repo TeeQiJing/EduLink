@@ -11,12 +11,13 @@ import com.dellmau.edulink.R;
 import com.dellmau.edulink.databinding.ActivityMainBinding;
 import com.dellmau.edulink.fragments.ChatFragment;
 import com.dellmau.edulink.fragments.CommunityFragment;
+import com.dellmau.edulink.fragments.CompanyFragment;
 import com.dellmau.edulink.fragments.ContentFragment;
 import com.dellmau.edulink.fragments.LeaderboardFragment;
 import com.dellmau.edulink.fragments.LearnFragment;
 import com.dellmau.edulink.fragments.LessonFragment;
-import com.dellmau.edulink.fragments.MatchMaking1Fragment;
 import com.dellmau.edulink.fragments.ProfileFragment;
+import com.dellmau.edulink.fragments.RadarFragment;
 import com.dellmau.edulink.models.PopularLessonCard;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,13 +26,14 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
 
     private ProfileFragment profileFragment;
+    private RadarFragment radarFragment;
     private LearnFragment learnFragment;
     private CommunityFragment communityFragment;
     private LeaderboardFragment leaderboardFragment;
     private ChatFragment chatFragment;
     private LessonFragment lessonFragment;
     private ContentFragment contentFragment;
-    private MatchMaking1Fragment matchMaking1Fragment;
+    private CompanyFragment companyFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         // Initialize fragments
+        companyFragment = new CompanyFragment();
         profileFragment = new ProfileFragment();
         learnFragment = new LearnFragment();
 //        ChapterFragment chapterFragment = new ChapterFragment();
@@ -51,10 +54,10 @@ public class MainActivity extends AppCompatActivity {
         leaderboardFragment = new LeaderboardFragment();
         chatFragment = new ChatFragment();
         contentFragment = new ContentFragment();
-        matchMaking1Fragment = new MatchMaking1Fragment();
+        radarFragment = new RadarFragment();
 
         // Load the default fragment
-        loadFragment(matchMaking1Fragment);
+        loadFragment(companyFragment);
 
 
         // Handle BottomNavigation item clicks
@@ -62,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             int itemId = item.getItemId();
             Log.d("Navigation", "Selected item ID: " + itemId); // Add this line to debug
             if (itemId == R.id.nav_learn) {
-                loadFragment(learnFragment);
+                loadFragment(companyFragment);
                 return true;
             } else if (itemId == R.id.nav_community) {
                 loadFragment(communityFragment);

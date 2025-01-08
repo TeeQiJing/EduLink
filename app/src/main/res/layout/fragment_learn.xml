@@ -8,27 +8,22 @@
     tools:context=".fragments.LearnFragment"
     android:id="@+id/LearnFragment">
 
-    <TextView
-        android:id="@+id/greeting"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="30dp"
-        android:fontFamily="@font/roboto"
-        android:text="Hi, Username"
-        android:textColor="@color/white"
-        android:textSize="34dp"
-        android:textStyle="bold" />
+    <ImageView
+        android:id="@+id/arrow"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:src="@drawable/ic_back2"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="13dp"/>
 
     <TextView
-        android:id="@+id/description"
+        android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/greeting"
-        android:layout_marginLeft="20dp"
-        android:fontFamily="@font/roboto"
         android:text="Find your chapters today!"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="18dp"
+        android:textSize="24dp"
         android:textColor="@color/white" />
 
     <ImageView
@@ -37,16 +32,15 @@
         android:layout_height="30dp"
         android:src="@mipmap/ic_notification"
         app:tint="@color/white"
-        android:layout_alignTop="@id/greeting"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="30dp"
-        android:layout_marginTop="13dp"/>
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="21dp"/>
 
     <com.google.android.material.search.SearchBar
         android:id="@+id/search_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/description"
+        android:layout_below="@id/arrow"
         android:layout_marginTop="20dp"
         android:hint="Search"
         app:hideNavigationIcon="false"/>
