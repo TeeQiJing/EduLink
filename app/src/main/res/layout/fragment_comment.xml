@@ -2,12 +2,28 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/CommentRL"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:layout_marginBottom="8dp"
     android:background="@color/white"
     android:elevation="2dp"
     android:orientation="vertical">
+
+    <Button
+        android:id="@+id/submit_review_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/button_gradient"
+        android:text="Post"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        app:backgroundTint="@null"
+        app:layout_constraintHorizontal_bias="0.498" />
 
     <LinearLayout
         android:id="@+id/header"
@@ -34,8 +50,8 @@
 
             <ImageView
                 android:id="@+id/post_user_avatar"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="43dp"
+                android:layout_height="match_parent"
                 android:src="@drawable/gradient_background" />
         </androidx.cardview.widget.CardView>
 
@@ -85,100 +101,101 @@
         android:textSize="16sp" />
 
     <!-- Post Actions -->
+
+
     <LinearLayout
-        android:id="@+id/like_comment"
-        android:layout_width="wrap_content"
+        android:id="@+id/submission"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/post_content"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal"
-        android:paddingLeft="30dp"
-        android:paddingRight="30dp"
-        android:paddingBottom="16dp">
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
 
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <Button
-                android:id="@+id/post_likes"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:backgroundTint="#E9E9E9"
-                android:text="19"
-                android:textColor="#80000000"
-                app:icon="@drawable/ic_like"
-                app:iconTint="#80000000" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <ImageView
-                    android:id="@+id/ic_liked"
-                    android:layout_width="20dp"
-                    android:layout_height="19dp"
-                    android:layout_gravity="start|center_vertical"
-                    android:layout_marginStart="23dp"
-                    android:layout_marginTop="15dp"
-                    android:visibility="gone"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_like_white" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </FrameLayout>
-
-        <Button
-            android:id="@+id/post_comments"
+        <TextView
+            android:id="@+id/textView13"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_weight="1"
-            android:backgroundTint="#E9E9E9"
-            android:text="5"
-            android:textColor="#80000000"
-            app:icon="@drawable/ic_comment"
-            app:iconTint="#80020202" />
-
-    </LinearLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_comments"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/input_section"
-        android:layout_below="@id/like_comment"
-        android:nestedScrollingEnabled="true"
-        tools:listitem="@layout/item_comment" />
-
-    <LinearLayout
-        android:id="@+id/input_section"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="@color/white"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="8dp">
+            android:layout_below="@id/post_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginLeft="30dp"
+            android:text="Submission:"
+            android:textSize="20dp" />
 
         <EditText
-            android:id="@+id/input_comment"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginEnd="10dp"
-            android:layout_weight="1"
-            android:hint="Enter your comment..."
-            android:padding="8dp" />
-
-        <Button
-            android:id="@+id/btn_send_comment"
+            android:id="@+id/forSubmit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/button_gradient"
-            android:text="Send"
-            app:backgroundTint="@null" />
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/edittext_border"
+            android:ems="10"
+            android:hint="link"
+            android:inputType="text"
+            android:padding="12dp" />
+
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/submissionLink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/submission"
+        android:layout_marginLeft="30dp"
+        android:text="TextView"
+        android:textSize="20dp" />
+
+    <LinearLayout
+        android:id="@+id/lecturerSkills"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/submissionLink"
+        android:layout_marginTop="32dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:layout_marginLeft="30dp"
+            android:text="Skills for Lecturer:"
+            android:textSize="20dp" />
+
+        <SeekBar
+            android:id="@+id/seekBar5"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/studentSkills"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/lecturerSkills"
+        android:layout_marginTop="32dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:text="Skills for Students:"
+            android:textSize="20dp" />
+
+        <SeekBar
+            android:id="@+id/seekBar4"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+
 
 </RelativeLayout>

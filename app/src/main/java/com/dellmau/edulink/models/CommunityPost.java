@@ -1,5 +1,8 @@
 package com.dellmau.edulink.models;
 
+import android.util.Log;
+import android.widget.Toast;
+
 import com.google.firebase.firestore.AggregateSource;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -16,17 +19,29 @@ public class CommunityPost implements Serializable {
     private String content;
     private long timestamp;
     private List<String> likedBy;
+    private List<String> linkSubmitted;
+    private List<String> peopleSubmitted;
     private List<CommunityComment> commentList;
     private String username;
     private String avatarURL; // Base64 String for the avatar
+    private String lecturerSkills;
+    private String studentSkills;
+    private String startDate;
+    private String endDate;
 
-    public CommunityPost(String userID, String title, String content, long timestamp, List<String> likedBy) {
+    public CommunityPost(String userID, String title, String content, long timestamp, List<String> likedBy, List<String> linkSubmitted, List<String> peopleSubmitted, String lecturerSkills, String studentSkills, String startDate, String endDate) {
         this.userID = userID;
         this.title = title;
         this.content = content;
         this.timestamp = timestamp;
         this.likedBy = likedBy != null ? likedBy : new ArrayList<>();
+        this.linkSubmitted = linkSubmitted != null ? linkSubmitted : new ArrayList<>();
+        this.peopleSubmitted = peopleSubmitted != null ? peopleSubmitted : new ArrayList<>();
         this.commentList = new ArrayList<>();
+        this.lecturerSkills = lecturerSkills;
+        this.studentSkills = studentSkills;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
     public String getPostID(){
@@ -47,6 +62,15 @@ public class CommunityPost implements Serializable {
     public List<String> getLikedBy() {
         return likedBy;
     }
+
+    public List<String> getLinkSubmitted() {
+        return linkSubmitted;
+    }
+
+    public List<String> getPeopleSubmitted() {
+        return peopleSubmitted;
+    }
+
     public String getUserID() {
         return userID;
     }
@@ -57,6 +81,33 @@ public class CommunityPost implements Serializable {
         return commentList;
     }
 
+    public String getLecturerSkills() {
+        return lecturerSkills;
+    }
+
+    public String getStudentSkills() {
+        return studentSkills;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+    public void setPeopleSubmitted(FirebaseFirestore db,String people,String newLink, CommunityPost.SaveCallback
+            callback){
+        Log.d("Cert","Here");
+        peopleSubmitted.add(people);
+        linkSubmitted.add(newLink);
+        db.collection("community").document(postID)
+                .update("peopleSubmitted", peopleSubmitted,"linkSubmitted",linkSubmitted)
+                .addOnSuccessListener(unused -> {
+                    if (callback != null) callback.onSuccess(postID);
+                })
+                .addOnFailureListener(callback::onFailure);
+    }
 
     // Save the CommunityPost to Firestore
     public void saveToFirebase(FirebaseFirestore db, SaveCallback callback) {
@@ -66,6 +117,11 @@ public class CommunityPost implements Serializable {
         post.put("content", content);
         post.put("timestamp", timestamp);
         post.put("likedBy", likedBy);
+        post.put("linkSubmitted", linkSubmitted);
+        post.put("lecturerSkills",lecturerSkills);
+        post.put("studentSkills",studentSkills);
+        post.put("startDate",startDate);
+        post.put("endDate",endDate);
 
         db.collection("community")
                 .add(post) // This adds the post and generates a unique document ID
@@ -146,6 +202,7 @@ public class CommunityPost implements Serializable {
                 })
                 .addOnFailureListener(callback::onFailure);
     }
+
 
     public void getCommentCount(FirebaseFirestore db, FetchCommentCountCallback callback) {
         if (postID == null || postID.isEmpty()) {

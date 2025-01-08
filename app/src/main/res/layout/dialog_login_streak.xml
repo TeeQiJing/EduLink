@@ -102,7 +102,7 @@
             android:layout_weight="1"
             android:backgroundTint="@color/purple_500"
             android:padding="8dp"
-            android:text="Collect Points"
+            android:text="OK"
             android:fontFamily="@font/adlam_display"
             android:textColor="@color/white" />
     </LinearLayout>
