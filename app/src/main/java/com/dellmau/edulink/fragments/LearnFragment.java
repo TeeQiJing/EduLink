@@ -217,20 +217,31 @@ public class LearnFragment extends Fragment {
                                 Log.d("LearnFragment", document.getId().toString());
                                 Log.d("LearnFragment", userId);
                                 Log.d("LearnFragment", String.valueOf(index));
-                                if (index == 2 && document.getId().equals(userId) ) {
+                                if (index == 2 && document.getId().equals(userId)) {
                                     Log.d("LearnFragment", "yay");
                                     DocumentReference organization = document.getDocumentReference("organization");
-                                    fetchStudentCurrentLessonData(organization);
-                                }
-                                else if (index == 1 && document.getId().equals(userId)) {
+                                    if (organization != null) {
+                                        fetchStudentCurrentLessonData(organization);
+                                    } else {
+                                        Log.e("LearnFragment", "Organization reference is null for user: " + document.getId());
+                                    }
+                                } else if (index == 1 && document.getId().equals(userId)) {
                                     DocumentReference organization = document.getDocumentReference("organization");
-                                    fetchEducatorCurrentLessonData(organization);
-                                }
-                                else if (index == 0 && document.getId().equals(userId)) {
+                                    if (organization != null) {
+                                        fetchEducatorCurrentLessonData(organization);
+                                    } else {
+                                        Log.e("LearnFragment", "Organization reference is null for user: " + document.getId());
+                                    }
+                                } else if (index == 0 && document.getId().equals(userId)) {
                                     backButton.setVisibility(View.GONE);
                                     DocumentReference company = document.getDocumentReference("organization");
-                                    fetchEmployerCurrentLessonData(company);
+                                    if (company != null) {
+                                        fetchEmployerCurrentLessonData(company);
+                                    } else {
+                                        Log.e("LearnFragment", "Company reference is null for user: " + document.getId());
+                                    }
                                 }
+
                             }
                         } else {
                             System.out.println("No documents found in the collection.");
