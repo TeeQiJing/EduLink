@@ -1,6 +1,9 @@
 package com.dellmau.edulink.adapters;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +22,7 @@ import com.dellmau.edulink.fragments.LearnFragment;
 import com.dellmau.edulink.fragments.LessonFragment;
 import com.dellmau.edulink.models.Collaboration;
 import com.dellmau.edulink.models.CurrentLessonCard;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -29,6 +33,7 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
     ArrayList<Collaboration> collaborations;
     FirebaseFirestore db;
     FragmentManager fragmentManager;
+
 
     public CompanyAdapter() {}
     public CompanyAdapter(FragmentManager fragmentManager) {
@@ -89,9 +94,7 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
                 .commit();
     }
 
-    public void setCompany() {
 
-    }
 
     private void fetchData(Collaboration collaboration, ViewHolder holder) {
         Log.d("nama", collaboration.getCompany().getId());

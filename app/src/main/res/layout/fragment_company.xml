@@ -23,14 +23,13 @@
 
     <ImageView
         android:id="@+id/icNotification"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:src="@mipmap/ic_notification"
-        app:tint="@color/white"
-        android:layout_alignTop="@id/company_greeting"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_um"
+        android:layout_toRightOf="@id/company_greeting"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="30dp"
-        android:layout_marginTop="13dp"/>
+        android:layout_marginTop="32dp"/>
+
 
     <com.google.android.material.search.SearchBar
         android:id="@+id/company_search_bar"
@@ -62,6 +61,7 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:clipToPadding="false"/>
+
 
 
 

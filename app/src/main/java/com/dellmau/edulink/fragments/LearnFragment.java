@@ -202,6 +202,8 @@ public class LearnFragment extends Fragment {
 //        });
 //    }
 
+
+
     private void fetchData() {
         // Get the current user ID
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -289,13 +291,13 @@ public class LearnFragment extends Fragment {
                                 }
                             }
                             currentLessonCardAdapter.setCard(currentLessonCards);
-                            searchCollaboration(currentLessonId, organization);
+                            searchCollaboration(organization, currentLessonId);
 //                            fetchTotalLessonData(currentLessonId, organization);
                         } else {
                             // No documents found for this user
                             Log.d("LearnFragment", "No current lessons found for user: " + userId);
                             currentLessonCardAdapter.setCard(currentLessonCards); // Ensure empty view if no current lessons
-                            searchCollaboration(currentLessonId, organization);
+                            searchCollaboration(organization, currentLessonId);
 //                            fetchTotalLessonData(null, organization); // Pass null to fetch all lessons as popular
                         }
                     } else {
@@ -442,6 +444,42 @@ public class LearnFragment extends Fragment {
                 }
             }
         });
+    }
+
+    private void searchCollaboration(DocumentReference organization, ArrayList<String> currentLessonId) {
+        FirebaseFirestore.getInstance()
+                .collection("collaboration")  // The collection where current lessons are stored
+                .whereEqualTo("company", organization)  // Query by userId
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        QuerySnapshot querySnapshot = task.getResult();
+                        if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                            // Loop through all the documents returned
+                            for (DocumentSnapshot document : querySnapshot) {
+                                // Deserialize the document to the CurrentLessonCard object
+                                DocumentReference collaboration = document.getDocumentReference("company");
+
+                                Log.d("LearnFragment", "collaboration.getId() " + collaboration.getId());
+                                Log.d("LearnFragment", "getArguments().getString(\"collaboration\" " + getArguments().getString("key"));
+                                // Log the fetched data to help debug
+                                if (collaboration != null && collaboration.getId().equals(getArguments().getString("key"))) {
+                                    Log.d("LearnFragment", "adddddddddddddddddddddddddddddddd " );
+                                    collaborations.add(collaboration);
+                                } else {
+                                    Log.d("LearnFragment", "CurrentLessonCard is null for document: " + document.getId());
+                                }
+                            }
+                            fetchTotalLessonData(currentLessonId, collaborations);
+                        } else {
+                            // No documents found for this user
+                            fetchTotalLessonData(null, collaborations); // Pass null to fetch all lessons as popular
+                        }
+                    } else {
+                        // Error while fetching data
+                        Log.e("LearnFragment", "Error getting documents: ", task.getException());
+                    }
+                });
     }
 
     private void searchCollaboration(ArrayList<String> currentLessonId, DocumentReference organization) {
