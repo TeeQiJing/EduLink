@@ -159,7 +159,7 @@ public class CommunityPost implements Serializable {
 
     // Fetch username and avatar from the 'users' collection
     public void fetchUserDetails(FirebaseFirestore db, UserDetailsCallback callback) {
-        db.collection("users").document(userID)
+        db.collection("employer").document(userID)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
