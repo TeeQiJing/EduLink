@@ -1,5 +1,7 @@
 package com.dellmau.edulink.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dellmau.edulink.R;
+import com.dellmau.edulink.models.Employer;
 import com.dellmau.edulink.models.Student;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
@@ -25,7 +28,11 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class FeedbackFragment extends Fragment {
 
@@ -36,6 +43,12 @@ public class FeedbackFragment extends Fragment {
     private TextInputEditText etFeedback;
     private MaterialButton btnSubmitFeedback;
 
+
+    String userId;
+
+    String user_role;
+    private SharedPreferences sharedPreferences;
+
     public FeedbackFragment() {
         // Required empty public constructor
     }
@@ -45,7 +58,10 @@ public class FeedbackFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
-        loadUserProfile();
+
+        sharedPreferences = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+        user_role = sharedPreferences.getString("user_role", "");
+
     }
 
     @Override
@@ -59,33 +75,51 @@ public class FeedbackFragment extends Fragment {
         etFeedback = rootView.findViewById(R.id.etFeedback);
         btnSubmitFeedback = rootView.findViewById(R.id.btnSubmitFeedback);
 
+
+        Toast.makeText(getActivity(), "User Role: " + user_role, Toast.LENGTH_SHORT).show();
+
+        userId = mAuth.getCurrentUser().getUid();
         // Initialize the toolbar
         MaterialToolbar toolbar = rootView.findViewById(R.id.topAppBar);
         toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed());
 
-        Spinner feedbackTypeSpinner = rootView.findViewById(R.id.spinnerFeedbackType);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
-                R.array.feedback_types, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        feedbackTypeSpinner.setAdapter(adapter);
 
         // Set up the submit button
         btnSubmitFeedback.setOnClickListener(v -> submitFeedback());
-
+        loadUserProfile();
         // Return the root view
         return rootView;
     }
 
     private void loadUserProfile() {
-        String userId = mAuth.getCurrentUser().getUid();
-        DocumentReference userDocRef = db.collection("users").document(userId);  // Fetch from Firestore
+        // Check if user_role is not null or empty before using it
+        if (user_role == null || user_role.isEmpty()) {
+            Toast.makeText(getContext(), "User role is not set", Toast.LENGTH_SHORT).show();
+            return; // Early exit if user_role is not valid
+        }
+
+        // Proceed with loading user profile based on the role
+        DocumentReference userDocRef = db.collection(user_role.toLowerCase()).document(userId);  // Fetch from Firestore
 
         userDocRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot documentSnapshot = task.getResult();
                 if (documentSnapshot != null && documentSnapshot.exists()) {
-                    Student user = documentSnapshot.toObject(Student.class);
-                    if (user != null) {
+
+                    if ("Student".equals(user_role)) {
+                        Student user = documentSnapshot.toObject(Student.class);
+                        // Display user details
+                        tvUsername.setText(user.getUsername());
+
+                        // Load avatar if it exists
+                        if (user.getAvatar() != null) {
+                            String base64Image = user.getAvatar();
+                            byte[] decodedString = Base64.decode(base64Image, Base64.DEFAULT);
+                            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                            avatarImageView.setImageBitmap(decodedByte);
+                        }
+                    } else if ("Employer".equals(user_role)) {
+                        Employer user = documentSnapshot.toObject(Employer.class);
                         // Display user details
                         tvUsername.setText(user.getUsername());
 
@@ -104,20 +138,35 @@ public class FeedbackFragment extends Fragment {
         });
     }
 
+
     private void submitFeedback() {
+
         String feedbackText = etFeedback.getText().toString().trim();
 
         if (feedbackText.isEmpty()) {
             // If feedback is empty, show a Toast message
             Toast.makeText(getContext(), "Please provide feedback", Toast.LENGTH_SHORT).show();
         } else {
-            // Simulate feedback submission (you can implement the actual logic)
-            Toast.makeText(getContext(), "Feedback sent successfully", Toast.LENGTH_SHORT).show();
+            // Create a new feedback document in the Firestore user_review collection
 
-            etFeedback.setText("");
+            Map<String, Object> feedbackData = new HashMap<>();
+            feedbackData.put("feedback", feedbackText);
+            feedbackData.put("role", user_role.toLowerCase());
+            feedbackData.put("userIdRef", db.collection(user_role.toLowerCase()).document(userId));
 
 
-
+            // Add the feedback data to Firestore
+            db.collection("user_review")
+                    .add(feedbackData)
+                    .addOnSuccessListener(documentReference -> {
+                        // Success callback: Feedback submitted successfully
+                        Toast.makeText(getContext(), "Feedback sent successfully", Toast.LENGTH_SHORT).show();
+                        etFeedback.setText(""); // Clear the feedback text field
+                    })
+                    .addOnFailureListener(e -> {
+                        // Failure callback: Show error message
+                        Toast.makeText(getContext(), "Failed to send feedback: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
         }
     }
 }

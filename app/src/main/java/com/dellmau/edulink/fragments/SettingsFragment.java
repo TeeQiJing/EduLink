@@ -2,7 +2,9 @@ package com.dellmau.edulink.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -48,6 +50,8 @@ public class SettingsFragment extends Fragment {
     private ImageView avatarImageView;
     private EditText etUsername, etBio, etOldPass, etNewPass, etConfirmPass;
     private LinearLayout btnEditProfile, btnChangePassword;
+    SharedPreferences sharedPreferences;
+    String user_role;
     public SettingsFragment() {
         // Required empty public constructor
     }
@@ -76,6 +80,8 @@ public class SettingsFragment extends Fragment {
 
         btnEditProfile.setOnClickListener(v -> showEditProfileConfirmationDialog());
         btnChangePassword.setOnClickListener(v -> showChangePasswordConfirmationDialog());
+        sharedPreferences = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+        user_role = sharedPreferences.getString("user_role", "");
 
         return rootView;
     }
@@ -291,7 +297,7 @@ public class SettingsFragment extends Fragment {
 
     private void saveUserProfile() {
         String userId = mAuth.getCurrentUser().getUid();
-        DocumentReference userDocRef = db.collection("users").document(userId);
+        DocumentReference userDocRef = db.collection(user_role.toLowerCase()).document(userId);
 
         // Get updated values from EditText fields
         String updatedUsername = etUsername.getText().toString().trim();

@@ -192,29 +192,29 @@
             </LinearLayout>
 
             <!-- Feedback -->
-            <LinearLayout
-                android:id="@+id/btnFeedback"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal"
-                android:padding="16dp">
+<!--            <LinearLayout-->
+<!--                android:id="@+id/btnFeedback"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="8dp"-->
+<!--                android:orientation="horizontal"-->
+<!--                android:padding="16dp">-->
 
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginEnd="16dp"
-                    android:src="@drawable/ic_feedback"
-                    app:tint="#4A4A4A" />
+<!--                <ImageView-->
+<!--                    android:layout_width="24dp"-->
+<!--                    android:layout_height="24dp"-->
+<!--                    android:layout_marginEnd="16dp"-->
+<!--                    android:src="@drawable/ic_feedback"-->
+<!--                    app:tint="#4A4A4A" />-->
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:text="Feedback"
-                    android:textColor="#4A4A4A"
-                    android:textSize="16sp" />
-            </LinearLayout>
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:gravity="center_vertical"-->
+<!--                    android:text="Feedback"-->
+<!--                    android:textColor="#4A4A4A"-->
+<!--                    android:textSize="16sp" />-->
+<!--            </LinearLayout>-->
 
             <!-- Settings -->
             <LinearLayout

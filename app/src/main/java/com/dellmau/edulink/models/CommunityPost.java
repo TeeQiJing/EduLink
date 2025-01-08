@@ -24,12 +24,17 @@ public class CommunityPost implements Serializable {
     private List<CommunityComment> commentList;
     private String username;
     private String avatarURL; // Base64 String for the avatar
-    private String lecturerSkills;
-    private String studentSkills;
+    private Map<String, Integer> lecturerSkills;
+    private Map<String, Integer> studentSkills;
     private String startDate;
     private String endDate;
+    private int numStudentRequired;
+    private int numEducatorRequired;
 
-    public CommunityPost(String userID, String title, String content, long timestamp, List<String> likedBy, List<String> linkSubmitted, List<String> peopleSubmitted, String lecturerSkills, String studentSkills, String startDate, String endDate) {
+    public CommunityPost(String userID, String title, String content, long timestamp,
+                         List<String> likedBy, List<String> linkSubmitted, List<String> peopleSubmitted,
+                         Map<String, Integer> lecturerSkills, Map<String, Integer> studentSkills,
+                         String startDate, String endDate, int numStudentRequired, int numEducatorRequired) {
         this.userID = userID;
         this.title = title;
         this.content = content;
@@ -38,10 +43,12 @@ public class CommunityPost implements Serializable {
         this.linkSubmitted = linkSubmitted != null ? linkSubmitted : new ArrayList<>();
         this.peopleSubmitted = peopleSubmitted != null ? peopleSubmitted : new ArrayList<>();
         this.commentList = new ArrayList<>();
-        this.lecturerSkills = lecturerSkills;
-        this.studentSkills = studentSkills;
+        this.lecturerSkills = lecturerSkills != null ? lecturerSkills : new HashMap<>();
+        this.studentSkills = studentSkills != null ? studentSkills : new HashMap<>();
         this.startDate = startDate;
         this.endDate = endDate;
+        this.numStudentRequired = numStudentRequired;
+        this.numEducatorRequired = numEducatorRequired;
     }
 
     public String getPostID(){
@@ -81,11 +88,11 @@ public class CommunityPost implements Serializable {
         return commentList;
     }
 
-    public String getLecturerSkills() {
+    public Map<String, Integer> getLecturerSkills() {
         return lecturerSkills;
     }
 
-    public String getStudentSkills() {
+    public Map<String, Integer> getStudentSkills() {
         return studentSkills;
     }
 
@@ -95,6 +102,13 @@ public class CommunityPost implements Serializable {
 
     public String getEndDate() {
         return endDate;
+    }
+    public int getNumStudentRequired() {
+        return numStudentRequired;
+    }
+
+    public int getNumEducatorRequired() {
+        return numEducatorRequired;
     }
     public void setPeopleSubmitted(FirebaseFirestore db,String people,String newLink, CommunityPost.SaveCallback
             callback){
@@ -122,6 +136,8 @@ public class CommunityPost implements Serializable {
         post.put("studentSkills",studentSkills);
         post.put("startDate",startDate);
         post.put("endDate",endDate);
+        post.put("numStudentRequired", numStudentRequired);
+        post.put("numEducatorRequired", numEducatorRequired);
 
         db.collection("community")
                 .add(post) // This adds the post and generates a unique document ID
@@ -143,7 +159,7 @@ public class CommunityPost implements Serializable {
 
     // Fetch username and avatar from the 'users' collection
     public void fetchUserDetails(FirebaseFirestore db, UserDetailsCallback callback) {
-        db.collection("users").document(userID)
+        db.collection("employer").document(userID)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
