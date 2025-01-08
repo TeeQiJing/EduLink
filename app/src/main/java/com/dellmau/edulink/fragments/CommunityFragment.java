@@ -33,7 +33,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CommunityFragment extends Fragment {
 
@@ -152,13 +154,15 @@ public class CommunityFragment extends Fragment {
                             List<String> likedBy = (List<String>) doc.get("likedBy");
                             List<String> linkSubmitted = (List<String>) doc.get("linkSubmitted");
                             List<String> peopleSubmitted = (List<String>) doc.get("peopleSubmitted");
-                            String lecturerSkills = doc.getString("lecturerSkills");
-                            String studentSkills = doc.getString("studentSkills");
+                            Map<String,Integer> lecturerSkills = (Map<String,Integer>)doc.get("lecturerSkills");
+                            Map<String,Integer> studentSkills = (Map<String,Integer>)doc.get("studentSkills");
                             String startDate = doc.getString("startDate");
                             String endDate = doc.getString("endDate");
+                            int numStudentRequired = doc.getLong("numStudentRequired").intValue();
+                            int numEducatorRequired = doc.getLong("numEducatorRequired").intValue();
 
                             // Create a CommunityPost object
-                            CommunityPost post = new CommunityPost(userID, title, content, timestamp, likedBy, linkSubmitted,peopleSubmitted, lecturerSkills, studentSkills,startDate,endDate);
+                            CommunityPost post = new CommunityPost(userID, title, content, timestamp, likedBy, linkSubmitted,peopleSubmitted, lecturerSkills, studentSkills,startDate,endDate,numStudentRequired, numEducatorRequired);
                             post.setPostID(postID);
                             postList.add(post);
 
@@ -229,6 +233,10 @@ public class CommunityFragment extends Fragment {
         EditText postContent = popupView.findViewById(R.id.project_description);
         ImageButton exitButton = popupView.findViewById(R.id.popup_exit);
         Button postButton = popupView.findViewById(R.id.submit_review_btn);
+        EditText suggestedLecturerSkill = popupView.findViewById(R.id.suggestedLecturerSkill);
+        EditText suggestedStudentSkill = popupView.findViewById(R.id.suggestedStudentSkill);
+        EditText numStudentRequired = popupView.findViewById(R.id.numStudentRequired);
+        EditText numEducatorRequired = popupView.findViewById(R.id.numEducatorRequired);
 
         ArrayAdapter<CharSequence> lecture_adapter =ArrayAdapter.createFromResource(
                 getActivity(),
@@ -257,17 +265,27 @@ public class CommunityFragment extends Fragment {
             String studentSkill = studentSkills.getSelectedItem().toString().trim();
             String startDate = start_date.getText().toString().trim();
             String endDate = end_date.getText().toString().trim();
+            int suggestedLecSkill = Integer.parseInt(suggestedLecturerSkill.getText().toString()); // Assuming it's directly an int
+            int suggestedStuSkill = Integer.parseInt(suggestedStudentSkill.getText().toString()); // Assuming it's directly an int
+            int numStudents = Integer.parseInt(numStudentRequired.getText().toString());          // Assuming it's directly an int
+            int numEducators = Integer.parseInt(numEducatorRequired.getText().toString());       // Assuming it's directly an int
+
 
             if (title.isEmpty() || lecSkill.isEmpty() || studentSkill.isEmpty() || startDate.isEmpty() || endDate.isEmpty() || content.isEmpty()) {
                 Toast.makeText(getContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show();
                 return;
             }
+            Map<String, Integer> lecturerSkillsMap = new HashMap<>();
+            lecturerSkillsMap.put(lecSkill, suggestedLecSkill);
+
+            Map<String, Integer> studentSkillsMap = new HashMap<>();
+            studentSkillsMap.put(studentSkill, suggestedStuSkill);
 
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
             String userID = currentUser != null ? currentUser.getUid() : "Unknown Student";
             long timestamp = System.currentTimeMillis();
 
-            CommunityPost post = new CommunityPost(userID, title, content, timestamp, new ArrayList<>(),new ArrayList<>(), new ArrayList<>(), lecSkill,studentSkill,startDate,endDate);
+            CommunityPost post = new CommunityPost(userID, title, content, timestamp, new ArrayList<>(),new ArrayList<>(), new ArrayList<>(), lecturerSkillsMap,studentSkillsMap,startDate,endDate,numStudents,numEducators);
             post.saveToFirebase(db, new CommunityPost.SaveCallback() {
                 @Override
                 public void onSuccess(String postId) {

@@ -70,8 +70,8 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Post
         holder.postTitle.setText(post.getTitle());
         holder.postContent.setText(post.getContent());
         holder.postLikes.setText(String.valueOf(post.getLikedBy().size()));
-        holder.lecturerSkillTV.setText(post.getLecturerSkills());
-        holder.studentSkillTV.setText(post.getStudentSkills());
+        holder.lecturerSkillTV.setText(post.getLecturerSkills().toString());
+        holder.studentSkillTV.setText(post.getStudentSkills().toString());
 
         String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 

@@ -47,14 +47,8 @@ import java.util.Arrays;
  */
 public class CompanyFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+
     private ArrayList<Collaboration> collaborations;
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
@@ -69,46 +63,28 @@ public class CompanyFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment CompanyFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static CompanyFragment newInstance(String param1, String param2) {
-        CompanyFragment fragment = new CompanyFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+
+//    @Override
+//    public void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//
+//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_company, container, false);
         greeting = rootView.findViewById(R.id.company_greeting);
+
         return rootView;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
+
         collections = new ArrayList<>(Arrays.asList(db.collection("employer"), db.collection("educator"), db.collection("student")));
 
 
@@ -144,7 +120,7 @@ public class CompanyFragment extends Fragment {
 
     private void fetchData() {
         // Get the current user ID
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String userId = mAuth.getCurrentUser().getUid();
         for (int i = 0; i < 3; i++) {
             int index = i;
             collections.get(i).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -157,18 +133,18 @@ public class CompanyFragment extends Fragment {
                                 Log.d("company", document.getId().toString());
                                 Log.d("company", userId);
                                 Log.d("company", String.valueOf(index));
-                                if (index == 2 && document.getId().equals(userId) ) {
+                                if (index == 2 && userId.equals(document.getId()) ) {
                                     Log.d("company", "yay");
                                     loadUserProfile(document.toObject(Student.class));
                                     DocumentReference company = document.getDocumentReference("organization");
                                     fetchDetails(company);
                                 }
-                                else if (index == 1 && document.getId().equals(userId)) {
+                                else if (index == 1 && userId.equals(document.getId())) {
                                     loadUserProfile(document.toObject(Educator.class));
                                     DocumentReference company = document.getDocumentReference("organization");
                                     fetchDetails(company);
                                 }
-                                else if (index == 0 && document.getId().equals(userId)) {
+                                else if (index == 0 && userId.equals(document.getId())) {
                                     loadUserProfile(document.toObject(Employer.class));
                                     DocumentReference company = document.getDocumentReference("organization");
                                     fetchDetails(company);
