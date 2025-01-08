@@ -219,19 +219,17 @@ public class LearnFragment extends Fragment {
                                 Log.d("LearnFragment", String.valueOf(index));
                                 if (index == 2 && document.getId().equals(userId) ) {
                                     Log.d("LearnFragment", "yay");
-//                                    loadUserProfile(document.toObject(Student.class));
                                     DocumentReference organization = document.getDocumentReference("organization");
                                     fetchStudentCurrentLessonData(organization);
                                 }
                                 else if (index == 1 && document.getId().equals(userId)) {
-//                                    loadUserProfile(document.toObject(Educator.class));
                                     DocumentReference organization = document.getDocumentReference("organization");
-                                    fetchStudentCurrentLessonData(organization);
+                                    fetchEducatorCurrentLessonData(organization);
                                 }
                                 else if (index == 0 && document.getId().equals(userId)) {
-//                                    loadUserProfile(document.toObject(Employer.class));
+                                    backButton.setVisibility(View.GONE);
                                     DocumentReference company = document.getDocumentReference("organization");
-//                                    fetchStudentCurrentLessonData(company);
+                                    fetchEmployerCurrentLessonData(company);
                                 }
                             }
                         } else {
@@ -245,7 +243,107 @@ public class LearnFragment extends Fragment {
         }
     }
 
+    private void fetchEmployerCurrentLessonData(DocumentReference organization) {
+        // Get the current user ID
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DocumentReference userReference = FirebaseFirestore.getInstance().collection("employer").document(userId);
+        Log.d("LearnFragment", "userReference" + userReference);
 
+        // Fetch the current lesson data for the user
+        FirebaseFirestore.getInstance()
+                .collection("current_lesson")  // The collection where current lessons are stored
+                .whereEqualTo("userId", userReference)  // Query by userId
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        QuerySnapshot querySnapshot = task.getResult();
+
+
+                        if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                            // Loop through all the documents returned
+                            for (DocumentSnapshot document : querySnapshot) {
+                                // Deserialize the document to the CurrentLessonCard object
+                                CurrentLessonCard currentLessonCard = document.toObject(CurrentLessonCard.class);
+                                Log.d("LearnFragment", "currentLessonCard" + currentLessonCard);
+
+                                // Log the fetched data to help debug
+                                if (currentLessonCard != null && currentLessonCard.getCompany().getId().equals(key)) {
+                                    Log.d("LearnFragment", "Fetched current lesson: " + currentLessonCard.getLessonId());
+                                    Log.d("LearnFragment", "Progress: " + currentLessonCard.getProgress());
+                                    currentLessonCards.add(currentLessonCard);
+                                    currentLessonId.add(currentLessonCard.getLessonId().getId());
+                                    Log.d("showing", currentLessonCard.getLessonId().getId());
+                                } else {
+                                    Log.d("LearnFragment", "CurrentLessonCard is null for document: " + document.getId());
+                                }
+                            }
+                            currentLessonCardAdapter.setCard(currentLessonCards);
+                            searchCollaboration(currentLessonId, organization);
+//                            fetchTotalLessonData(currentLessonId, organization);
+                        } else {
+                            // No documents found for this user
+                            Log.d("LearnFragment", "No current lessons found for user: " + userId);
+                            currentLessonCardAdapter.setCard(currentLessonCards); // Ensure empty view if no current lessons
+                            searchCollaboration(currentLessonId, organization);
+//                            fetchTotalLessonData(null, organization); // Pass null to fetch all lessons as popular
+                        }
+                    } else {
+                        // Error while fetching data
+                        Log.e("LearnFragment", "Error getting documents: ", task.getException());
+                    }
+                });
+    }
+
+    private void fetchEducatorCurrentLessonData(DocumentReference organization) {
+        // Get the current user ID
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        DocumentReference userReference = FirebaseFirestore.getInstance().collection("educator").document(userId);
+        Log.d("LearnFragment", "userReference" + userReference);
+
+        // Fetch the current lesson data for the user
+        FirebaseFirestore.getInstance()
+                .collection("current_lesson")  // The collection where current lessons are stored
+                .whereEqualTo("userId", userReference)  // Query by userId
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        QuerySnapshot querySnapshot = task.getResult();
+
+
+                        if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                            // Loop through all the documents returned
+                            for (DocumentSnapshot document : querySnapshot) {
+                                // Deserialize the document to the CurrentLessonCard object
+                                CurrentLessonCard currentLessonCard = document.toObject(CurrentLessonCard.class);
+                                Log.d("LearnFragment", "currentLessonCard" + currentLessonCard);
+
+                                // Log the fetched data to help debug
+                                if (currentLessonCard != null && currentLessonCard.getCompany().getId().equals(key)) {
+                                    Log.d("LearnFragment", "Fetched current lesson: " + currentLessonCard.getLessonId());
+                                    Log.d("LearnFragment", "Progress: " + currentLessonCard.getProgress());
+                                    currentLessonCards.add(currentLessonCard);
+                                    currentLessonId.add(currentLessonCard.getLessonId().getId());
+                                    Log.d("showing", currentLessonCard.getLessonId().getId());
+                                } else {
+                                    Log.d("LearnFragment", "CurrentLessonCard is null for document: " + document.getId());
+                                }
+                            }
+                            currentLessonCardAdapter.setCard(currentLessonCards);
+                            searchCollaboration(currentLessonId, organization);
+//                            fetchTotalLessonData(currentLessonId, organization);
+                        } else {
+                            // No documents found for this user
+                            Log.d("LearnFragment", "No current lessons found for user: " + userId);
+                            currentLessonCardAdapter.setCard(currentLessonCards); // Ensure empty view if no current lessons
+                            searchCollaboration(currentLessonId, organization);
+//                            fetchTotalLessonData(null, organization); // Pass null to fetch all lessons as popular
+                        }
+                    } else {
+                        // Error while fetching data
+                        Log.e("LearnFragment", "Error getting documents: ", task.getException());
+                    }
+                });
+    }
 
     private void fetchStudentCurrentLessonData(DocumentReference organization) {
         // Get the current user ID

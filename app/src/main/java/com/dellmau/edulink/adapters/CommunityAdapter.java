@@ -61,7 +61,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Post
 
             @Override
             public void onFailure(Exception e) {
-                holder.username.setText("Unknown Student");
+                holder.username.setText("Unknown Employer");
                 holder.avatar.setImageResource(R.drawable.gradient_background);
             }
         });
@@ -70,8 +70,10 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Post
         holder.postTitle.setText(post.getTitle());
         holder.postContent.setText(post.getContent());
         holder.postLikes.setText(String.valueOf(post.getLikedBy().size()));
-        holder.lecturerSkillTV.setText(post.getLecturerSkills());
-        holder.studentSkillTV.setText(post.getStudentSkills());
+        holder.lecturerSkillTV.setText(post.getLecturerSkills().toString());
+        holder.studentSkillTV.setText(post.getStudentSkills().toString());
+        holder.stuRequired.setText("Number of students required: "+post.getNumStudentRequired());
+        holder.lecRequired.setText("Number of educator required: "+post.getNumEducatorRequired());
 
         String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -154,7 +156,7 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Post
     }
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
-        TextView username, postTime, postTitle, postContent,lecturerSkillTV,studentSkillTV;
+        TextView username, postTime, postTitle, postContent,lecturerSkillTV,studentSkillTV, stuRequired, lecRequired;
         public Button postLikes;
         Button postComments;
         ImageView avatar,likeOverlayIcon;
@@ -172,6 +174,8 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Post
             likeOverlayIcon = itemView.findViewById(R.id.ic_liked);
             lecturerSkillTV = itemView.findViewById(R.id.lecturerSkillTV);
             studentSkillTV = itemView.findViewById(R.id.studentSkillTV);
+            stuRequired = itemView.findViewById(R.id.stuRequired);
+            lecRequired = itemView.findViewById(R.id.lecRequired);
         }
     }
 
