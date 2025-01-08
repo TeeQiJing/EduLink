@@ -8,6 +8,24 @@
     android:background="@drawable/gradient_background"
     android:id="@+id/searchLessonFragment">
 
+    <ImageView
+        android:id="@+id/arrow"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_back2"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:id="@+id/search_company_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search Lesson"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="13dp"
+        android:textSize="28dp"
+        android:textColor="@color/white"/>
+
 
     <androidx.cardview.widget.CardView
         android:id="@+id/search_container"
@@ -15,9 +33,10 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         app:cardCornerRadius="250dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp">
+        android:layout_marginRight="10dp"
+        android:layout_below="@id/arrow">
 
         <SearchView
             android:id="@+id/search_post"
@@ -29,7 +48,7 @@
             android:layoutDirection="rtl"
             android:padding="8dp"
             android:queryBackground="@android:color/transparent"
-            android:queryHint="Search..." />
+            android:queryHint="Search" />
 
     </androidx.cardview.widget.CardView>
 
