@@ -1,5 +1,7 @@
 package com.dellmau.edulink.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -76,6 +78,8 @@ public class LessonFragment extends Fragment {
     private boolean isEnrolled = false; // Flag to check enrollment status
     private boolean isFavorited = false;
     private Map<String, Boolean> completionStateMap; // To track completion state of chapters and quizzes
+    SharedPreferences sharedPreferences;
+    String user_role;
 
     public LessonFragment() {
         // Required empty public constructor
@@ -94,6 +98,9 @@ public class LessonFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_lesson, container, false);
+        sharedPreferences = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+        user_role = sharedPreferences.getString("user_role", "");
+        Toast.makeText(getContext(), "User Role: " + user_role, Toast.LENGTH_SHORT).show();
 
         tvLessonTitle = rootView.findViewById(R.id.lessonTitle);
         tvLessonRatingText = rootView.findViewById(R.id.lessonRatingText);
@@ -210,7 +217,7 @@ public class LessonFragment extends Fragment {
         String userId = mAuth.getCurrentUser().getUid();
 
         db.collection("current_lesson")
-                .whereEqualTo("userId", db.collection("users").document(userId))
+                .whereEqualTo("userId", db.collection(user_role.toLowerCase()).document(userId))
                 .whereEqualTo("lessonId", db.collection("total_lesson").document(lessonId))
                 .addSnapshotListener((snapshots, error) -> {
                     if (error != null) {
@@ -237,7 +244,7 @@ public class LessonFragment extends Fragment {
         DocumentReference badgeRef = db.collection("total_badges").document("5j5PlMVp5CQH4rs0zYZJ"); // Using the direct badge ID
 
         // Get a reference to the user document
-        DocumentReference userRef = db.collection("users").document(userId);
+        DocumentReference userRef = db.collection(user_role.toLowerCase()).document(userId);
 
         // Check if the user is enrolled in a course by looking for their record in the current_lesson collection
         db.collection("current_lesson")
@@ -341,7 +348,7 @@ public class LessonFragment extends Fragment {
 
         // References to the user and badge documents
         DocumentReference badgeRef = db.collection("total_badges").document("ShBef8enC80FJMKhodvt"); // MilestoneMaster badge ID
-        DocumentReference userRef = db.collection("users").document(userId);
+        DocumentReference userRef = db.collection(user_role.toLowerCase()).document(userId);
 
         // Step 1: Query the chapter_progress collection to count completed chapters
         db.collection("chapter_progress")
@@ -454,7 +461,7 @@ public class LessonFragment extends Fragment {
 
         // References to the user and badge documents
         DocumentReference badgeRef = db.collection("total_badges").document("acNltPeVwqD3gzcX5A3Y"); // MilestoneMaster badge ID
-        DocumentReference userRef = db.collection("users").document(userId);
+        DocumentReference userRef = db.collection(user_role.toLowerCase()).document(userId);
 
         // Step 1: Query the quiz_progress collection to count completed quiz
         db.collection("quiz_progress")
@@ -702,7 +709,7 @@ public class LessonFragment extends Fragment {
         String userId = mAuth.getCurrentUser().getUid();
         Task<QuerySnapshot> task = db.collection("chapter_progress")
                 .whereEqualTo("chapterIdRef", db.collection("chapters").document(chapter.getId()))
-                .whereEqualTo("userIdRef", db.collection("users").document(userId))
+                .whereEqualTo("userIdRef", db.collection(user_role.toLowerCase()).document(userId))
                 .get()
                 .addOnCompleteListener(task1 -> {
                     if (task1.isSuccessful() && !task1.getResult().isEmpty()) {
@@ -720,7 +727,7 @@ public class LessonFragment extends Fragment {
         String userId = mAuth.getCurrentUser().getUid();
         Task<QuerySnapshot> task = db.collection("quiz_progress")
                 .whereEqualTo("quizIdRef", db.collection("quiz").document(quiz.getId()))
-                .whereEqualTo("userIdRef", db.collection("users").document(userId))
+                .whereEqualTo("userIdRef", db.collection(user_role.toLowerCase()).document(userId))
                 .get()
                 .addOnCompleteListener(task1 -> {
                     if (task1.isSuccessful() && !task1.getResult().isEmpty()) {
@@ -762,7 +769,7 @@ public class LessonFragment extends Fragment {
         Log.d(TAG, "Lesson Id: " + lessonId);
 
         // Create references to the user and lesson documents
-        DocumentReference userRef = db.collection("users").document(userId);
+        DocumentReference userRef = db.collection(user_role.toLowerCase()).document(userId);
         DocumentReference lessonRef = db.collection("total_lesson").document(lessonId);
 
         // Query to find the document where both userId (userRef) and lessonId (lessonRef) match
@@ -795,7 +802,7 @@ public class LessonFragment extends Fragment {
     private void enrollInLesson(String userId, String lessonId) {
         CollectionReference currentLessonRef = db.collection("current_lesson");
 
-        DocumentReference userIdRef = db.collection("users").document(userId);
+        DocumentReference userIdRef = db.collection(user_role.toLowerCase()).document(userId);
         DocumentReference lessonIdRef = db.collection("total_lesson").document(lessonId);
         Map<String, Object> currentLessonData = new HashMap<>();
         currentLessonData.put("userId", userIdRef);
