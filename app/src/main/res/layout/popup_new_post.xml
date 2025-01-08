@@ -74,7 +74,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
         <Button
-            android:id="@+id/popup_post"
+            android:id="@+id/submit_review_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"

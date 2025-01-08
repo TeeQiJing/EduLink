@@ -91,22 +91,20 @@ public class CommunityFragment extends Fragment {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             String userId = currentUser.getUid();
+            Log.d("Cert",userId);
 
             // Check if the user exists in any of the tables (employee, student, educator)
-            db.collection("employee").whereEqualTo("uid", userId).get()
+            db.collection("employer").document(userId).get()
                     .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            if (!task.getResult().isEmpty()) {
-                                // The user is in the employee table
-                                Log.d("UserCheck", "User found in employee table");
-                                fabPost.setVisibility(View.VISIBLE);
-                                fabPost.setOnClickListener(v -> showNewPostPopup());
-                            } else {
-                                // The user is not in the employee table, check other tables
-                                fabPost.setVisibility(View.GONE);
-                            }
-                        } else {
+                        if (task.isSuccessful() && task.getResult().exists()) {
+                            // The user is in the employee table
+                            Log.d("UserCheck", "User found in employee table");
+                            fabPost.setVisibility(View.VISIBLE);
+                            fabPost.setOnClickListener(v -> showNewPostPopup());
+                        }
+                        else {
                             Log.w("UserCheck", "Error checking employee table", task.getException());
+                            fabPost.setVisibility(View.GONE);
                         }
                     });
         }
@@ -152,13 +150,15 @@ public class CommunityFragment extends Fragment {
                             String content = doc.getString("content");
                             long timestamp = parseTimestamp(doc.get("timestamp"));
                             List<String> likedBy = (List<String>) doc.get("likedBy");
+                            List<String> linkSubmitted = (List<String>) doc.get("linkSubmitted");
+                            List<String> peopleSubmitted = (List<String>) doc.get("peopleSubmitted");
                             String lecturerSkills = doc.getString("lecturerSkills");
                             String studentSkills = doc.getString("studentSkills");
                             String startDate = doc.getString("startDate");
                             String endDate = doc.getString("endDate");
 
                             // Create a CommunityPost object
-                            CommunityPost post = new CommunityPost(userID, title, content, timestamp, likedBy,lecturerSkills,studentSkills,startDate,endDate);
+                            CommunityPost post = new CommunityPost(userID, title, content, timestamp, likedBy, linkSubmitted,peopleSubmitted, lecturerSkills, studentSkills,startDate,endDate);
                             post.setPostID(postID);
                             postList.add(post);
 
@@ -228,7 +228,7 @@ public class CommunityFragment extends Fragment {
         EditText end_date = popupView.findViewById(R.id.end_date);
         EditText postContent = popupView.findViewById(R.id.project_description);
         ImageButton exitButton = popupView.findViewById(R.id.popup_exit);
-        Button postButton = popupView.findViewById(R.id.popup_post);
+        Button postButton = popupView.findViewById(R.id.submit_review_btn);
 
         ArrayAdapter<CharSequence> lecture_adapter =ArrayAdapter.createFromResource(
                 getActivity(),
@@ -267,7 +267,7 @@ public class CommunityFragment extends Fragment {
             String userID = currentUser != null ? currentUser.getUid() : "Unknown Student";
             long timestamp = System.currentTimeMillis();
 
-            CommunityPost post = new CommunityPost(userID, title, content, timestamp, new ArrayList<>(),lecSkill,studentSkill,startDate,endDate);
+            CommunityPost post = new CommunityPost(userID, title, content, timestamp, new ArrayList<>(),new ArrayList<>(), new ArrayList<>(), lecSkill,studentSkill,startDate,endDate);
             post.saveToFirebase(db, new CommunityPost.SaveCallback() {
                 @Override
                 public void onSuccess(String postId) {
