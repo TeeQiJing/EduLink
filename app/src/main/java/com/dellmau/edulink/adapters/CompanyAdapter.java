@@ -51,7 +51,7 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
         holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                changeFragment();
+                changeFragment(collaborations.get(position));
             }
         });
     }
@@ -67,17 +67,14 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
         notifyDataSetChanged();
     }
 
-    private void changeFragment() {
-        // Pass the lesson ID as a fresh argument to the fragment
-//        Bundle bundle = new Bundle();
-//        bundle.putString("lessonId", currentLessonCard.getLessonId().getId()); // Use the lesson ID for the new lesson
-//        Log.d("CurrentLessonCardAdapter", "Navigating to lesson with ID: " + currentLessonCard.getLessonId().getId());
+    private void changeFragment(Collaboration collaboration) {
+//         Pass the lesson ID as a fresh argument to the fragment
+        Bundle bundle = new Bundle();
+        bundle.putString("key", collaboration.getCompany().getId()); // Use the lesson ID for the new lesson
 
-        // Create a new instance of LessonFragment
-//        LessonFragment lessonFragment = new LessonFragment();
-//        lessonFragment.setArguments(bundle);
 
         LearnFragment learnFragment = new LearnFragment();
+        learnFragment.setArguments(bundle);
 
         // Replace the current fragment with the new LessonFragment
         fragmentManager.beginTransaction()
@@ -90,6 +87,10 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
                 .replace(R.id.fragment_container, learnFragment)  // Use replace to load a fresh fragment
                 .addToBackStack(null)  // Ensure you can go back to the previous fragment
                 .commit();
+    }
+
+    public void setCompany() {
+
     }
 
     private void fetchData(Collaboration collaboration, ViewHolder holder) {
@@ -111,6 +112,14 @@ public class CompanyAdapter extends RecyclerView.Adapter<CompanyAdapter.ViewHold
                             switch (name){
                                 case "Dell Technologies":
                                     holder.imageView.setImageResource(R.drawable.ic_delltechnologies);
+                                    Log.d("nama", "set image");
+                                    break;
+                                case "ASUS Tech":
+                                    holder.imageView.setImageResource(R.drawable.ic_asus);
+                                    Log.d("nama", "set image");
+                                    break;
+                                case "Acer Technologies":
+                                    holder.imageView.setImageResource(R.drawable.ic_acer);
                                     Log.d("nama", "set image");
                                     break;
                                 default:

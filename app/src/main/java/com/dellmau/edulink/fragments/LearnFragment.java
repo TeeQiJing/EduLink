@@ -1,6 +1,7 @@
 package com.dellmau.edulink.fragments;
 
 import android.app.AlertDialog;
+import android.media.Image;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,10 +53,11 @@ public class LearnFragment extends Fragment {
     private RecyclerView popularRecView;
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
-    private TextView greeting;
     private SearchBar searchBar;
     ArrayList<CollectionReference> collections;
     private ArrayList<DocumentReference> collaborations;
+    private String key;
+    private ImageView backButton;
 
     public LearnFragment() {
         // Required empty public constructor
@@ -63,13 +66,14 @@ public class LearnFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_learn, container, false);
-        greeting = rootView.findViewById(R.id.greeting);
+//        greeting = rootView.findViewById(R.id.greeting);
         return rootView;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        key = getArguments().getString("key");
         currentLessonId = new ArrayList<>();
 
         db = FirebaseFirestore.getInstance();
@@ -103,7 +107,10 @@ public class LearnFragment extends Fragment {
 //        checkAndShowLoginStreakDialog();
 
         searchBar = view.findViewById(R.id.search_bar);
+        Bundle bundle = new Bundle();
+        bundle.putString("key", key);
         SearchLesson searchLesson = new SearchLesson();
+        searchLesson.setArguments(bundle);
         searchBar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -114,82 +121,86 @@ public class LearnFragment extends Fragment {
                         .commit();
             }
         });
-
-    }
-    private void checkAndShowLoginStreakDialog() {
-        String userId = mAuth.getCurrentUser().getUid();
-        DocumentReference loginStreakRef = db.collection("login_streak").document(userId);
-
-        // Attach a real-time listener to the login streak document
-        loginStreakRef.addSnapshotListener((documentSnapshot, error) -> {
-            if (error != null) {
-                Log.e("LearnFragment", "Error listening to login streak changes", error);
-                return;
-            }
-
-            if (documentSnapshot != null && documentSnapshot.exists()) {
-                Boolean isPointCollected = documentSnapshot.getBoolean("isPointCollected");
-                Long streak = documentSnapshot.getLong("streak");
-
-                if (isPointCollected == null || streak == null) {
-                    Log.e("LearnFragment", "Login streak document is missing required fields.");
-                    return;
-                }
-
-                Log.d("Streak", "Real-time streak: " + streak);
-
-                if (!isPointCollected) {
-                    // Show the login streak dialog if isLogin is false
-                    showLoginStreakDialog(loginStreakRef, streak);
-                } else {
-                    Log.d("LoginStreak", "Dialog already shown today, skipping.");
-                }
-            } else {
-                Log.e("LearnFragment", "Login streak document does not exist.");
-            }
+        backButton = view.findViewById(R.id.arrow);
+        backButton.setOnClickListener(v -> {
+            // Use FragmentManager to navigate back
+            requireActivity().getSupportFragmentManager().popBackStack();
         });
     }
-
-
-    private void showLoginStreakDialog(DocumentReference loginStreakRef, long streak) {
-        // Inflate the dialog layout
-        LayoutInflater inflater = LayoutInflater.from(requireContext());
-        View dialogView = inflater.inflate(R.layout.dialog_login_streak, null);
-
-        // Initialize dialog components
-        TextView streakNumberTextView = dialogView.findViewById(R.id.streak_number);
-        streakNumberTextView.setText(String.valueOf(streak)); // Set streak number
-
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(requireContext());
-        dialogBuilder.setView(dialogView);
-
-        AlertDialog streakDialog = dialogBuilder.create();
-        streakDialog.show();
-
-        // Collect Points button
-        Button collectPointsButton = dialogView.findViewById(R.id.collect_points_button);
-        int points = (int) streak * 5;
-        collectPointsButton.setOnClickListener(v -> {
-
-
-
-            String userId = mAuth.getCurrentUser().getUid();
-            DocumentReference userPointsRef = db.collection("users").document(userId);
-
-            userPointsRef.update("xp", FieldValue.increment(points))
-                    .addOnSuccessListener(aVoid -> {
-                        loginStreakRef.update("isPointCollected", true);
-                        Log.d("LoginStreak", "isPointCollected updated to true after showing dialog");
-                        Toast.makeText(requireContext(), points + " Points Collected!", Toast.LENGTH_SHORT).show();
-                        streakDialog.dismiss();
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e("LoginStreak", "Error updating isPointCollected field", e);
-                        Toast.makeText(requireContext(), "Error collecting points: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
-            streakDialog.dismiss();
-        });
-    }
+//    private void checkAndShowLoginStreakDialog() {
+//        String userId = mAuth.getCurrentUser().getUid();
+//        DocumentReference loginStreakRef = db.collection("login_streak").document(userId);
+//
+//        // Attach a real-time listener to the login streak document
+//        loginStreakRef.addSnapshotListener((documentSnapshot, error) -> {
+//            if (error != null) {
+//                Log.e("LearnFragment", "Error listening to login streak changes", error);
+//                return;
+//            }
+//
+//            if (documentSnapshot != null && documentSnapshot.exists()) {
+//                Boolean isPointCollected = documentSnapshot.getBoolean("isPointCollected");
+//                Long streak = documentSnapshot.getLong("streak");
+//
+//                if (isPointCollected == null || streak == null) {
+//                    Log.e("LearnFragment", "Login streak document is missing required fields.");
+//                    return;
+//                }
+//
+//                Log.d("Streak", "Real-time streak: " + streak);
+//
+//                if (!isPointCollected) {
+//                    // Show the login streak dialog if isLogin is false
+//                    showLoginStreakDialog(loginStreakRef, streak);
+//                } else {
+//                    Log.d("LoginStreak", "Dialog already shown today, skipping.");
+//                }
+//            } else {
+//                Log.e("LearnFragment", "Login streak document does not exist.");
+//            }
+//        });
+//    }
+//
+//
+//    private void showLoginStreakDialog(DocumentReference loginStreakRef, long streak) {
+//        // Inflate the dialog layout
+//        LayoutInflater inflater = LayoutInflater.from(requireContext());
+//        View dialogView = inflater.inflate(R.layout.dialog_login_streak, null);
+//
+//        // Initialize dialog components
+//        TextView streakNumberTextView = dialogView.findViewById(R.id.streak_number);
+//        streakNumberTextView.setText(String.valueOf(streak)); // Set streak number
+//
+//        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(requireContext());
+//        dialogBuilder.setView(dialogView);
+//
+//        AlertDialog streakDialog = dialogBuilder.create();
+//        streakDialog.show();
+//
+//        // Collect Points button
+//        Button collectPointsButton = dialogView.findViewById(R.id.collect_points_button);
+//        int points = (int) streak * 5;
+//        collectPointsButton.setOnClickListener(v -> {
+//
+//
+//
+//            String userId = mAuth.getCurrentUser().getUid();
+//            DocumentReference userPointsRef = db.collection("users").document(userId);
+//
+//            userPointsRef.update("xp", FieldValue.increment(points))
+//                    .addOnSuccessListener(aVoid -> {
+//                        loginStreakRef.update("isPointCollected", true);
+//                        Log.d("LoginStreak", "isPointCollected updated to true after showing dialog");
+//                        Toast.makeText(requireContext(), points + " Points Collected!", Toast.LENGTH_SHORT).show();
+//                        streakDialog.dismiss();
+//                    })
+//                    .addOnFailureListener(e -> {
+//                        Log.e("LoginStreak", "Error updating isPointCollected field", e);
+//                        Toast.makeText(requireContext(), "Error collecting points: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+//                    });
+//            streakDialog.dismiss();
+//        });
+//    }
 
     private void fetchData() {
         // Get the current user ID
@@ -208,17 +219,17 @@ public class LearnFragment extends Fragment {
                                 Log.d("LearnFragment", String.valueOf(index));
                                 if (index == 2 && document.getId().equals(userId) ) {
                                     Log.d("LearnFragment", "yay");
-                                    loadUserProfile(document.toObject(Student.class));
+//                                    loadUserProfile(document.toObject(Student.class));
                                     DocumentReference organization = document.getDocumentReference("organization");
                                     fetchStudentCurrentLessonData(organization);
                                 }
                                 else if (index == 1 && document.getId().equals(userId)) {
-                                    loadUserProfile(document.toObject(Educator.class));
+//                                    loadUserProfile(document.toObject(Educator.class));
                                     DocumentReference organization = document.getDocumentReference("organization");
                                     fetchStudentCurrentLessonData(organization);
                                 }
                                 else if (index == 0 && document.getId().equals(userId)) {
-                                    loadUserProfile(document.toObject(Employer.class));
+//                                    loadUserProfile(document.toObject(Employer.class));
                                     DocumentReference company = document.getDocumentReference("organization");
 //                                    fetchStudentCurrentLessonData(company);
                                 }
@@ -260,7 +271,7 @@ public class LearnFragment extends Fragment {
                                 Log.d("LearnFragment", "currentLessonCard" + currentLessonCard);
 
                                 // Log the fetched data to help debug
-                                if (currentLessonCard != null) {
+                                if (currentLessonCard != null && currentLessonCard.getCompany().getId().equals(key)) {
                                     Log.d("LearnFragment", "Fetched current lesson: " + currentLessonCard.getLessonId());
                                     Log.d("LearnFragment", "Progress: " + currentLessonCard.getProgress());
                                     currentLessonCards.add(currentLessonCard);
@@ -338,8 +349,11 @@ public class LearnFragment extends Fragment {
                                 // Deserialize the document to the CurrentLessonCard object
                                 DocumentReference collaboration = document.getDocumentReference("company");
 
+                                Log.d("LearnFragment", "collaboration.getId() " + collaboration.getId());
+                                Log.d("LearnFragment", "getArguments().getString(\"collaboration\" " + getArguments().getString("key"));
                                 // Log the fetched data to help debug
-                                if (collaboration != null) {
+                                if (collaboration != null && collaboration.getId().equals(getArguments().getString("key"))) {
+                                    Log.d("LearnFragment", "adddddddddddddddddddddddddddddddd " );
                                     collaborations.add(collaboration);
                                 } else {
                                     Log.d("LearnFragment", "CurrentLessonCard is null for document: " + document.getId());
@@ -357,81 +371,81 @@ public class LearnFragment extends Fragment {
                 });
     }
 
-    private void loadUserProfile(Object object) {
-        String userId = mAuth.getCurrentUser().getUid();
-
-        if (object instanceof Student) {
-            db.collection("student").document(userId).get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot documentSnapshot = task.getResult();
-                    if (documentSnapshot != null && documentSnapshot.exists()) {
-                        Student student = documentSnapshot.toObject(Student.class);
-                        if (student != null) {
-                            greeting.setText("Hi, " + student.getUsername());
-
-                            // Safely handle the avatar field
-
-                        }else {
-                            greeting.setText("Hi, User");
-                        }
-                    } else {
-                        Log.e("LearnFragment", "Document does not exist or is null");
-                        Toast.makeText(getContext(), "Profile not found", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Log.e("LearnFragment", "Error fetching user profile", task.getException());
-                    Toast.makeText(getContext(), "Failed to load profile", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-        else if (object instanceof Educator) {
-            db.collection("educator").document(userId).get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot documentSnapshot = task.getResult();
-                    if (documentSnapshot != null && documentSnapshot.exists()) {
-                        Educator educator = documentSnapshot.toObject(Educator.class);
-                        if (educator != null) {
-                            greeting.setText("Hi, " + educator.getUsername());
-
-                            // Safely handle the avatar field
-
-                        }else {
-                            greeting.setText("Hi, User");
-                        }
-                    } else {
-                        Log.e("LearnFragment", "Document does not exist or is null");
-                        Toast.makeText(getContext(), "Profile not found", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Log.e("LearnFragment", "Error fetching user profile", task.getException());
-                    Toast.makeText(getContext(), "Failed to load profile", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-        else if (object instanceof Employer) {
-            db.collection("employer").document(userId).get().addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot documentSnapshot = task.getResult();
-                    if (documentSnapshot != null && documentSnapshot.exists()) {
-                        Employer employer = documentSnapshot.toObject(Employer.class);
-                        if (employer != null) {
-                            greeting.setText("Hi, " + employer.getUsername());
-
-                            // Safely handle the avatar field
-
-                        }else {
-                            greeting.setText("Hi, User");
-                        }
-                    } else {
-                        Log.e("LearnFragment", "Document does not exist or is null");
-                        Toast.makeText(getContext(), "Profile not found", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Log.e("LearnFragment", "Error fetching user profile", task.getException());
-                    Toast.makeText(getContext(), "Failed to load profile", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
-
-    }
+//    private void loadUserProfile(Object object) {
+//        String userId = mAuth.getCurrentUser().getUid();
+//
+//        if (object instanceof Student) {
+//            db.collection("student").document(userId).get().addOnCompleteListener(task -> {
+//                if (task.isSuccessful()) {
+//                    DocumentSnapshot documentSnapshot = task.getResult();
+//                    if (documentSnapshot != null && documentSnapshot.exists()) {
+//                        Student student = documentSnapshot.toObject(Student.class);
+//                        if (student != null) {
+//                            greeting.setText("Hi, " + student.getUsername());
+//
+//                            // Safely handle the avatar field
+//
+//                        }else {
+//                            greeting.setText("Hi, User");
+//                        }
+//                    } else {
+//                        Log.e("LearnFragment", "Document does not exist or is null");
+//                        Toast.makeText(getContext(), "Profile not found", Toast.LENGTH_SHORT).show();
+//                    }
+//                } else {
+//                    Log.e("LearnFragment", "Error fetching user profile", task.getException());
+//                    Toast.makeText(getContext(), "Failed to load profile", Toast.LENGTH_SHORT).show();
+//                }
+//            });
+//        }
+//        else if (object instanceof Educator) {
+//            db.collection("educator").document(userId).get().addOnCompleteListener(task -> {
+//                if (task.isSuccessful()) {
+//                    DocumentSnapshot documentSnapshot = task.getResult();
+//                    if (documentSnapshot != null && documentSnapshot.exists()) {
+//                        Educator educator = documentSnapshot.toObject(Educator.class);
+//                        if (educator != null) {
+//                            greeting.setText("Hi, " + educator.getUsername());
+//
+//                            // Safely handle the avatar field
+//
+//                        }else {
+//                            greeting.setText("Hi, User");
+//                        }
+//                    } else {
+//                        Log.e("LearnFragment", "Document does not exist or is null");
+//                        Toast.makeText(getContext(), "Profile not found", Toast.LENGTH_SHORT).show();
+//                    }
+//                } else {
+//                    Log.e("LearnFragment", "Error fetching user profile", task.getException());
+//                    Toast.makeText(getContext(), "Failed to load profile", Toast.LENGTH_SHORT).show();
+//                }
+//            });
+//        }
+//        else if (object instanceof Employer) {
+//            db.collection("employer").document(userId).get().addOnCompleteListener(task -> {
+//                if (task.isSuccessful()) {
+//                    DocumentSnapshot documentSnapshot = task.getResult();
+//                    if (documentSnapshot != null && documentSnapshot.exists()) {
+//                        Employer employer = documentSnapshot.toObject(Employer.class);
+//                        if (employer != null) {
+//                            greeting.setText("Hi, " + employer.getUsername());
+//
+//                            // Safely handle the avatar field
+//
+//                        }else {
+//                            greeting.setText("Hi, User");
+//                        }
+//                    } else {
+//                        Log.e("LearnFragment", "Document does not exist or is null");
+//                        Toast.makeText(getContext(), "Profile not found", Toast.LENGTH_SHORT).show();
+//                    }
+//                } else {
+//                    Log.e("LearnFragment", "Error fetching user profile", task.getException());
+//                    Toast.makeText(getContext(), "Failed to load profile", Toast.LENGTH_SHORT).show();
+//                }
+//            });
+//        }
+//
+//    }
 }
