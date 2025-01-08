@@ -112,7 +112,6 @@ public class CommentFragment extends Fragment {
         lecturerSkill.setVisibility(View.GONE);
         studentSkill.setVisibility(View.GONE);
 
-
         loadUpperPost(post);
         String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
