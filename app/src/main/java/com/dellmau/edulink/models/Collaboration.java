@@ -6,6 +6,8 @@ public class Collaboration {
     DocumentReference company;
     DocumentReference university;
 
+    public Collaboration() {}
+
     public DocumentReference getCompany() {
         return company;
     }

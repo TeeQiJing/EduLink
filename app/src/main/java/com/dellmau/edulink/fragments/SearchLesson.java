@@ -19,11 +19,17 @@ import android.widget.TextView;
 
 import com.dellmau.edulink.R;
 import com.dellmau.edulink.adapters.SearchLessonAdapter;
+import com.dellmau.edulink.models.Collaboration;
+import com.dellmau.edulink.models.Company;
 import com.dellmau.edulink.models.CurrentLessonCard;
+import com.dellmau.edulink.models.Educator;
+import com.dellmau.edulink.models.Employer;
+import com.dellmau.edulink.models.Student;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -31,6 +37,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -55,6 +62,8 @@ public class SearchLesson extends Fragment {
     private Runnable searchRunnable;
     private Handler handler = new Handler(Looper.getMainLooper());
     private TextView result;
+    private ArrayList<CollectionReference> collections;
+    private ArrayList<DocumentReference> collaborations;
 
     public SearchLesson() {
         // Required empty public constructor
@@ -100,7 +109,8 @@ public class SearchLesson extends Fragment {
 
         Log.d("Search", "first");
 
-
+        collaborations = new ArrayList<>();
+        collections = new ArrayList<>(Arrays.asList(db.collection("employer"), db.collection("educator"), db.collection("student")));
         result = view.findViewById(R.id.result);
         visited = new HashSet<>();
         db = FirebaseFirestore.getInstance();
@@ -232,7 +242,7 @@ public class SearchLesson extends Fragment {
     }
     private void filterLessons(String query) {
         Log.d("Search", "query filter: " + query);
-
+//        fetchData();
 
         if (query.isEmpty()) {
             // If no search query, return all lesson IDs
@@ -264,8 +274,13 @@ public class SearchLesson extends Fragment {
                             String title = document.getString("title");
                             Log.d("search", title);
                             if (title != null && title.toLowerCase().contains(query.toLowerCase()) && !filterLessons.contains(lesson)) {
-                                filterLessons.add(lesson); // Maintain original order by adding to filterLessons
-                                Log.d("search", "update filter:" + filterLessons);
+//                                for (int i = 0; i < collaborations.size(); i++) {
+//                                    if (collaborations.get(i).getId().equals(document.getDocumentReference("company").getId())) {
+                                        filterLessons.add(lesson); // Maintain original order by adding to filterLessons
+                                        Log.d("search", "update filter:" + filterLessons);
+//                                    }
+//                                }
+
                             }
                         }
                     } else {
@@ -296,6 +311,76 @@ public class SearchLesson extends Fragment {
                 Log.d("Search", "Filtered lessons: " + filterLessons.toString());
             });
         }
+    }
+
+    private void fetchData() {
+        // Get the current user ID
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        for (int i = 0; i < 3; i++) {
+            int index = i;
+            collections.get(i).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        QuerySnapshot querySnapshot = task.getResult();
+                        if (!querySnapshot.isEmpty()) {
+                            for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                                Log.d("LearnFragment", document.getId().toString());
+                                Log.d("LearnFragment", userId);
+                                Log.d("LearnFragment", String.valueOf(index));
+                                if (index == 2 && document.getId().equals(userId) ) {
+                                    Log.d("LearnFragment", "yay");
+                                    DocumentReference organization = document.getDocumentReference("organization");
+                                    searchCollaboration(organization);
+                                }
+                                else if (index == 1 && document.getId().equals(userId)) {
+                                    DocumentReference organization = document.getDocumentReference("organization");
+                                    searchCollaboration(organization);
+                                }
+                                else if (index == 0 && document.getId().equals(userId)) {
+                                    DocumentReference company = document.getDocumentReference("organization");
+//                                    fetchStudentCurrentLessonData(company);
+                                }
+                            }
+                        } else {
+                            System.out.println("No documents found in the collection.");
+                        }
+                    } else {
+                        System.err.println("Error getting documents: " + task.getException());
+                    }
+                }
+            });
+        }
+    }
+
+    private void searchCollaboration(DocumentReference organization) {
+        FirebaseFirestore.getInstance()
+                .collection("collaboration")  // The collection where current lessons are stored
+                .whereEqualTo("university", organization)  // Query by userId
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        QuerySnapshot querySnapshot = task.getResult();
+                        if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                            // Loop through all the documents returned
+                            for (DocumentSnapshot document : querySnapshot) {
+                                // Deserialize the document to the CurrentLessonCard object
+                                DocumentReference collaboration = document.getDocumentReference("company");
+                                Collaboration company = document.toObject(Collaboration.class);
+
+                                // Log the fetched data to help debug
+                                if (collaboration != null) {
+                                    collaborations.add(company.getCompany());
+                                } else {
+                                    Log.d("LearnFragment", "CurrentLessonCard is null for document: " + document.getId());
+                                }
+                            }
+                        }
+                    } else {
+                        // Error while fetching data
+                        Log.e("LearnFragment", "Error getting documents: ", task.getException());
+                    }
+                });
     }
 
 }

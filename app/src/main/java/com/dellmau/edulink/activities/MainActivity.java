@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         contentFragment = new ContentFragment();
 
         // Load the default fragment
-        loadFragment(communityFragment);
+        loadFragment(companyFragment);
 
 
         // Handle BottomNavigation item clicks
@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
             int itemId = item.getItemId();
             Log.d("Navigation", "Selected item ID: " + itemId); // Add this line to debug
             if (itemId == R.id.nav_learn) {
-                loadFragment(learnFragment);
+                loadFragment(companyFragment);
                 return true;
             } else if (itemId == R.id.nav_community) {
                 loadFragment(communityFragment);

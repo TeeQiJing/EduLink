@@ -20,11 +20,12 @@ import android.widget.Toast;
 
 import com.dellmau.edulink.R;
 import com.dellmau.edulink.adapters.CompanyAdapter;
-import com.dellmau.edulink.adapters.CurrentLessonCardAdapter;
-import com.dellmau.edulink.adapters.PopularLessonCardAdapter;
+
 import com.dellmau.edulink.models.Collaboration;
-import com.dellmau.edulink.models.CurrentLessonCard;
-import com.dellmau.edulink.models.User;
+//import com.dellmau.edulink.models.User;
+import com.dellmau.edulink.models.Educator;
+import com.dellmau.edulink.models.Employer;
+import com.dellmau.edulink.models.Student;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,6 +37,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -105,19 +107,20 @@ public class CompanyFragment extends Fragment {
 
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
-        collections = new ArrayList<>();
+        collections = new ArrayList<>(Arrays.asList(db.collection("employer"), db.collection("educator"), db.collection("student")));
+
 
         collaborations = new ArrayList<>();
         companyAdapter = new CompanyAdapter(requireActivity().getSupportFragmentManager());
         recView = view.findViewById(R.id.company_rec_view);
-        companyAdapter.setCollaborations(collaborations);
+//        recView.setAdapter(companyAdapter);
         recView.setLayoutManager(new GridLayoutManager(requireContext(), 2));
 
         Log.d("LearnFragment", "RecyclerView set up with adapter.");
         fetchData();
 
 
-        loadUserProfile();
+//        loadUserProfile();
 
 
         // Check login streak and show dialog
@@ -141,15 +144,30 @@ public class CompanyFragment extends Fragment {
         // Get the current user ID
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         for (int i = 0; i < 3; i++) {
-            String collection = collections.get(i).getId().toString();
-            db.collection(collection).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            int index = i;
+            collections.get(i).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if (task.isSuccessful()) {
                         QuerySnapshot querySnapshot = task.getResult();
                         if (!querySnapshot.isEmpty()) {
                             for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                                if (document.getId().equals("/student/" + userId) || document.getId().equals("/educator/" + userId) || document.getId().equals("/employer/" + userId)) {
+                                Log.d("company", document.getId().toString());
+                                Log.d("company", userId);
+                                Log.d("company", String.valueOf(index));
+                                if (index == 2 && document.getId().equals(userId) ) {
+                                    Log.d("company", "yay");
+                                    loadUserProfile(document.toObject(Student.class));
+                                    DocumentReference company = document.getDocumentReference("organization");
+                                    fetchDetails(company);
+                                }
+                                else if (index == 1 && document.getId().equals(userId)) {
+                                    loadUserProfile(document.toObject(Educator.class));
+                                    DocumentReference company = document.getDocumentReference("organization");
+                                    fetchDetails(company);
+                                }
+                                else if (index == 0 && document.getId().equals(userId)) {
+                                    loadUserProfile(document.toObject(Employer.class));
                                     DocumentReference company = document.getDocumentReference("organization");
                                     fetchDetails(company);
                                 }
@@ -174,6 +192,7 @@ public class CompanyFragment extends Fragment {
                         QuerySnapshot querySnapshot = task.getResult();
 
                         // Log the query result
+                        Log.d("details", task.toString());
 
                         if (querySnapshot != null && !querySnapshot.isEmpty()) {
                             // Loop through all the documents returned
@@ -186,7 +205,9 @@ public class CompanyFragment extends Fragment {
                                     collaborations.add(collaboration);
                                 }
                             }
+                            Log.d("details", collaborations.get(0).getCompany().getId());
                             companyAdapter.setCollaborations(collaborations);
+                            recView.setAdapter(companyAdapter);
                         }
                     } else {
                         // Error while fetching data
@@ -195,32 +216,82 @@ public class CompanyFragment extends Fragment {
                 });
     }
 
-    private void loadUserProfile() {
+    private void loadUserProfile(Object object) {
         String userId = mAuth.getCurrentUser().getUid();
-        DocumentReference userDocRef = db.collection("users").document(userId);
 
-        userDocRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot documentSnapshot = task.getResult();
-                if (documentSnapshot != null && documentSnapshot.exists()) {
-                    User user = documentSnapshot.toObject(User.class);
-                    if (user != null) {
-                        greeting.setText("Hi, " + user.getUsername());
+        if (object instanceof Student) {
+            db.collection("student").document(userId).get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    if (documentSnapshot != null && documentSnapshot.exists()) {
+                        Student student = documentSnapshot.toObject(Student.class);
+                        if (student != null) {
+                            greeting.setText("Hi, " + student.getUsername());
 
-                        // Safely handle the avatar field
+                            // Safely handle the avatar field
 
-                    }else {
-                        greeting.setText("Hi, User");
+                        }else {
+                            greeting.setText("Hi, User");
+                        }
+                    } else {
+                        Log.e("LearnFragment", "Document does not exist or is null");
+                        Toast.makeText(getContext(), "Profile not found", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Log.e("LearnFragment", "Document does not exist or is null");
-                    Toast.makeText(getContext(), "Profile not found", Toast.LENGTH_SHORT).show();
+                    Log.e("LearnFragment", "Error fetching user profile", task.getException());
+                    Toast.makeText(getContext(), "Failed to load profile", Toast.LENGTH_SHORT).show();
                 }
-            } else {
-                Log.e("LearnFragment", "Error fetching user profile", task.getException());
-                Toast.makeText(getContext(), "Failed to load profile", Toast.LENGTH_SHORT).show();
-            }
-        });
+            });
+        }
+        else if (object instanceof Educator) {
+            db.collection("educator").document(userId).get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    if (documentSnapshot != null && documentSnapshot.exists()) {
+                        Educator educator = documentSnapshot.toObject(Educator.class);
+                        if (educator != null) {
+                            greeting.setText("Hi, " + educator.getUsername());
+
+                            // Safely handle the avatar field
+
+                        }else {
+                            greeting.setText("Hi, User");
+                        }
+                    } else {
+                        Log.e("LearnFragment", "Document does not exist or is null");
+                        Toast.makeText(getContext(), "Profile not found", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Log.e("LearnFragment", "Error fetching user profile", task.getException());
+                    Toast.makeText(getContext(), "Failed to load profile", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        else if (object instanceof Employer) {
+            db.collection("employer").document(userId).get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    if (documentSnapshot != null && documentSnapshot.exists()) {
+                        Employer employer = documentSnapshot.toObject(Employer.class);
+                        if (employer != null) {
+                            greeting.setText("Hi, " + employer.getUsername());
+
+                            // Safely handle the avatar field
+
+                        }else {
+                            greeting.setText("Hi, User");
+                        }
+                    } else {
+                        Log.e("LearnFragment", "Document does not exist or is null");
+                        Toast.makeText(getContext(), "Profile not found", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Log.e("LearnFragment", "Error fetching user profile", task.getException());
+                    Toast.makeText(getContext(), "Failed to load profile", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
     }
 
     private void checkAndShowLoginStreakDialog() {
