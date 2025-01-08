@@ -15,6 +15,7 @@ import com.dellmau.edulink.fragments.ContentFragment;
 import com.dellmau.edulink.fragments.LeaderboardFragment;
 import com.dellmau.edulink.fragments.LearnFragment;
 import com.dellmau.edulink.fragments.LessonFragment;
+import com.dellmau.edulink.fragments.MatchMaking1Fragment;
 import com.dellmau.edulink.fragments.ProfileFragment;
 import com.dellmau.edulink.models.PopularLessonCard;
 
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     private ChatFragment chatFragment;
     private LessonFragment lessonFragment;
     private ContentFragment contentFragment;
+    private MatchMaking1Fragment matchMaking1Fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +51,10 @@ public class MainActivity extends AppCompatActivity {
         leaderboardFragment = new LeaderboardFragment();
         chatFragment = new ChatFragment();
         contentFragment = new ContentFragment();
+        matchMaking1Fragment = new MatchMaking1Fragment();
 
         // Load the default fragment
-        loadFragment(learnFragment);
+        loadFragment(matchMaking1Fragment);
 
 
         // Handle BottomNavigation item clicks
