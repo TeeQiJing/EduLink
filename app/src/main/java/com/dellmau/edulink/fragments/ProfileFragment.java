@@ -219,7 +219,7 @@ public class ProfileFragment extends Fragment {
                             }
 
                             // Fetch number of courses
-//                                fetchCoursesCount(UID);
+                                fetchCoursesCount(UID);
                         }
                     }else if(user_role.equals("Educator")){
                         Educator user = documentSnapshot.toObject(Educator.class);
@@ -238,7 +238,7 @@ public class ProfileFragment extends Fragment {
                             }
 
                             // Fetch number of courses
-//                                fetchCoursesCount(UID);
+                                fetchCoursesCount(UID);
                         }
                     }else if(user_role.equals("Employer")){
                         Employer user = documentSnapshot.toObject(Employer.class);
@@ -274,19 +274,11 @@ public class ProfileFragment extends Fragment {
 
         if(user_role.equals("Employer")){
             radarFragmentContainer.setVisibility(View.GONE);
-        }else{
+        }else {
             Fragment radarFragment = new RadarFragment();
             FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
             transaction.replace(R.id.radarFragmentContainer, radarFragment).commit();
         }
-
-
-
-
-
-
-
-
 
     }
 
@@ -363,7 +355,7 @@ public class ProfileFragment extends Fragment {
 
     public void uploadAvatar(String base64Image) {
         String userId = mAuth.getCurrentUser().getUid();
-        DocumentReference userDocRef = db.collection("users").document(userId);
+        DocumentReference userDocRef = db.collection(user_role.toLowerCase()).document(userId);
 
         userDocRef.update("avatar", base64Image).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
