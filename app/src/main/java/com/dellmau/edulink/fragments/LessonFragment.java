@@ -80,6 +80,7 @@ public class LessonFragment extends Fragment {
     private Map<String, Boolean> completionStateMap; // To track completion state of chapters and quizzes
     private SharedPreferences sharedPreferences;
     private String user_role;
+    String userId;
 
     public LessonFragment() {
         // Required empty public constructor
@@ -90,6 +91,8 @@ public class LessonFragment extends Fragment {
         super.onCreate(savedInstanceState);
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
+        sharedPreferences = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+        user_role = sharedPreferences.getString("user_role", "");
         contentList = new ArrayList<>();
         completionStateMap = new HashMap<>();
     }
@@ -99,9 +102,9 @@ public class LessonFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_lesson, container, false);
 
-        String userId = mAuth.getCurrentUser().getUid();
-        sharedPreferences = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
-        user_role = sharedPreferences.getString("user_role", "");
+         userId = mAuth.getCurrentUser().getUid();
+
+        Toast.makeText(getContext(), "User Role: " + user_role, Toast.LENGTH_SHORT).show();
 
 //        Educator, Student, Employer
 
@@ -245,39 +248,36 @@ public class LessonFragment extends Fragment {
     private void checkAndGrantFirstStepBadge() {
         String userId = mAuth.getCurrentUser().getUid();
 
-        // Get a reference to the badge document by using the badgeId
-        DocumentReference badgeRef = db.collection("total_badges").document("5j5PlMVp5CQH4rs0zYZJ"); // Using the direct badge ID
+        // Reference to the badge document
+        DocumentReference badgeRef = db.collection("total_badges").document("F7b4c6UZRrux2399McYx");
 
-        // Get a reference to the user document
-        DocumentReference userRef = db.collection("users").document(userId);
-
-        // Check if the user is enrolled in a course by looking for their record in the current_lesson collection
+        // Check the number of lessons the user is enrolled in
         db.collection("current_lesson")
-                .whereEqualTo("userId", userRef)  // Compare userId with the DocumentReference
+                .whereEqualTo("userId", userId)  // Compare userId as a string
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
-                        // If the user is enrolled in a course, check the size of the result
-                        if (task.getResult().size() == 1) {
-                            // Student is enrolling for the first time, so we grant the badge
-                            Log.d(TAG, "Student is enrolling for the first time.");
-                            // Check if the user has the "First step" badge
+                        int enrolledLessonsCount = task.getResult().size();
+
+                        if (enrolledLessonsCount == 1) {
+                            // User is enrolling for the first time, grant the badge
+                            Log.d(TAG, "User is enrolling for the first time.");
+
+                            // Check if the user already has the "First step" badge
                             db.collection("user_badges")
-                                    .whereEqualTo("userIdRef", userRef)
-                                    .whereEqualTo("badgeIdRef", badgeRef) // Check for existing "First step badge"
+                                    .whereEqualTo("userIdRef", userId)
+                                    .whereEqualTo("badgeIdRef", badgeRef)
                                     .get()
                                     .addOnCompleteListener(badgeTask -> {
-                                        if (badgeTask.isSuccessful() && badgeTask.getResult() != null && badgeTask.getResult().isEmpty()) {
-                                            // Student doesn't have the "First step badge", grant it
-                                            grantFirstStepBadge(userId, badgeRef, userRef);
+                                        if (badgeTask.isSuccessful() && badgeTask.getResult().isEmpty()) {
+                                            // User doesn't have the badge, grant it
+                                            grantFirstStepBadge(userId, badgeRef);
                                         } else {
-                                            // Student already has the "First step badge"
-                                            Log.d(TAG, "Student already has the 'First step badge'.");
+                                            Log.d(TAG, "User already has the 'First step badge'.");
                                         }
                                     });
                         } else {
-                            // Student is already enrolled in multiple lessons or no lessons at all, no action needed
-                            Log.d(TAG, "Student is already enrolled in multiple lessons or no lessons at all.");
+                            Log.d(TAG, "User is already enrolled in multiple lessons or no lessons at all.");
                         }
                     } else {
                         Log.e(TAG, "Error checking enrollment in lessons: ", task.getException());
@@ -285,19 +285,19 @@ public class LessonFragment extends Fragment {
                 });
     }
 
-    private void grantFirstStepBadge(String userId, DocumentReference badgeRef, DocumentReference userRef) {
-        // Create a new badge document to grant the "First step badge"
+    private void grantFirstStepBadge(String userId, DocumentReference badgeRef) {
+        // Prepare badge data
         Map<String, Object> badgeData = new HashMap<>();
-        badgeData.put("userIdRef", userRef); // Use user reference
-        badgeData.put("badgeIdRef", badgeRef); // Use badge reference
+        badgeData.put("userIdRef", userId);
+        badgeData.put("badgeIdRef", badgeRef);
         badgeData.put("dateGranted", FieldValue.serverTimestamp());
 
+        // Add badge to user_badges collection
         db.collection("user_badges")
                 .add(badgeData)
                 .addOnSuccessListener(documentReference -> {
                     showBadge1Dialog(badgeRef);
                     Log.d(TAG, "First step badge granted to user.");
-
                     Toast.makeText(getContext(), "You have received the 'First step badge'!", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
@@ -305,8 +305,9 @@ public class LessonFragment extends Fragment {
                     Toast.makeText(getContext(), "Failed to grant 'First step badge'.", Toast.LENGTH_SHORT).show();
                 });
     }
+
     private void showBadge1Dialog(DocumentReference badgeRef) {
-        // Get the badge details from the total_badges collection using the badgeRef
+        // Get badge details from the total_badges collection
         badgeRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot badgeSnapshot = task.getResult();
@@ -314,28 +315,24 @@ public class LessonFragment extends Fragment {
                     String badgeName = badgeSnapshot.getString("badges_name");
                     String badgeDesc = badgeSnapshot.getString("badges_desc");
 
-                    // Update the dialog with the badge information
+                    // Show badge dialog
                     final Dialog badgeDialog = new Dialog(getContext());
                     badgeDialog.setContentView(R.layout.dialog_badges);
 
-                    // Set the title and description
+                    // Set dialog fields
                     TextView titleView = badgeDialog.findViewById(R.id.badges_dialog_title);
                     TextView messageView = badgeDialog.findViewById(R.id.badges_dialog_message);
-                    ImageView badgeImageView = badgeDialog.findViewById(R.id.badges_image);  // Assume you add an ImageView in XML for icon
+                    ImageView badgeImageView = badgeDialog.findViewById(R.id.badges_image);
 
                     titleView.setText(badgeName);
                     messageView.setText(badgeDesc);
+                    badgeImageView.setImageResource(R.drawable.ic_badges1);
 
-                    // You can load the appropriate badge icon here (example: set a default icon for now)
-                    badgeImageView.setImageResource(R.drawable.ic_badges1); // You can replace this with a dynamic icon if needed
-
-                    // Show the dialog
                     badgeDialog.show();
 
-                    // Handle the collect button click
+                    // Handle collect button click
                     Button collectButton = badgeDialog.findViewById(R.id.collect_badges_button);
-                    collectButton.setOnClickListener(v -> badgeDialog.dismiss());  // Close dialog on button click
-
+                    collectButton.setOnClickListener(v -> badgeDialog.dismiss());
                 } else {
                     Log.d(TAG, "Badge not found in total_badges collection.");
                 }
@@ -347,13 +344,12 @@ public class LessonFragment extends Fragment {
 
 
 
-
     private void checkAndGrantMilestoneMasterBadge() {
         String userId = mAuth.getCurrentUser().getUid();
 
         // References to the user and badge documents
-        DocumentReference badgeRef = db.collection("total_badges").document("ShBef8enC80FJMKhodvt"); // MilestoneMaster badge ID
-        DocumentReference userRef = db.collection("users").document(userId);
+        DocumentReference badgeRef = db.collection("total_badges").document("N728Fa70Bi6CGhmNamWS"); // MilestoneMaster badge ID
+        DocumentReference userRef = db.collection(user_role.toLowerCase()).document(userId);
 
         // Step 1: Query the chapter_progress collection to count completed chapters
         db.collection("chapter_progress")
@@ -465,8 +461,8 @@ public class LessonFragment extends Fragment {
         String userId = currentUser.getUid();
 
         // References to the user and badge documents
-        DocumentReference badgeRef = db.collection("total_badges").document("acNltPeVwqD3gzcX5A3Y"); // MilestoneMaster badge ID
-        DocumentReference userRef = db.collection("users").document(userId);
+        DocumentReference badgeRef = db.collection("total_badges").document("deLXBZZVuy56SSunUswJ"); // MilestoneMaster badge ID
+        DocumentReference userRef = db.collection(user_role.toLowerCase()).document(userId);
 
         // Step 1: Query the quiz_progress collection to count completed quiz
         db.collection("quiz_progress")
@@ -714,7 +710,7 @@ public class LessonFragment extends Fragment {
         String userId = mAuth.getCurrentUser().getUid();
         Task<QuerySnapshot> task = db.collection("chapter_progress")
                 .whereEqualTo("chapterIdRef", db.collection("chapters").document(chapter.getId()))
-                .whereEqualTo("userIdRef", db.collection("users").document(userId))
+                .whereEqualTo("userIdRef", db.collection(user_role.toLowerCase()).document(userId))
                 .get()
                 .addOnCompleteListener(task1 -> {
                     if (task1.isSuccessful() && !task1.getResult().isEmpty()) {
@@ -732,7 +728,7 @@ public class LessonFragment extends Fragment {
         String userId = mAuth.getCurrentUser().getUid();
         Task<QuerySnapshot> task = db.collection("quiz_progress")
                 .whereEqualTo("quizIdRef", db.collection("quiz").document(quiz.getId()))
-                .whereEqualTo("userIdRef", db.collection("users").document(userId))
+                .whereEqualTo("userIdRef", db.collection(user_role.toLowerCase()).document(userId))
                 .get()
                 .addOnCompleteListener(task1 -> {
                     if (task1.isSuccessful() && !task1.getResult().isEmpty()) {
@@ -774,7 +770,7 @@ public class LessonFragment extends Fragment {
         Log.d(TAG, "Lesson Id: " + lessonId);
 
         // Create references to the user and lesson documents
-        DocumentReference userRef = db.collection("users").document(userId);
+        DocumentReference userRef = db.collection(user_role.toLowerCase()).document(userId);
         DocumentReference lessonRef = db.collection("total_lesson").document(lessonId);
 
         // Query to find the document where both userId (userRef) and lessonId (lessonRef) match

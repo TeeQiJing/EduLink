@@ -4,6 +4,8 @@ package com.dellmau.edulink.activities;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;  // Import Fragment class
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -14,6 +16,7 @@ import com.dellmau.edulink.fragments.CommunityFragment;
 import com.dellmau.edulink.fragments.CompanyFragment;
 import com.dellmau.edulink.fragments.ContentFragment;
 import com.dellmau.edulink.fragments.CourseOutlineFragment;
+import com.dellmau.edulink.fragments.FeedbackFragment;
 import com.dellmau.edulink.fragments.LeaderboardFragment;
 import com.dellmau.edulink.fragments.LearnFragment;
 import com.dellmau.edulink.fragments.LessonFragment;
@@ -27,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
 
     private ProfileFragment profileFragment;
+    private FeedbackFragment feedbackFragment;
     private RadarFragment radarFragment;
     private LearnFragment learnFragment;
     private CommunityFragment communityFragment;
@@ -37,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
     private CompanyFragment companyFragment;
     private CourseOutlineFragment courseOutlineFragment;
 
+    SharedPreferences sharedPreferences;
+    String user_role;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
         // Initialize binding
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        sharedPreferences = getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+        user_role = sharedPreferences.getString("user_role", "");
 
         // Initialize fragments
         companyFragment = new CompanyFragment();
@@ -58,9 +68,15 @@ public class MainActivity extends AppCompatActivity {
         contentFragment = new ContentFragment();
         radarFragment = new RadarFragment();
         courseOutlineFragment = new CourseOutlineFragment();
+        feedbackFragment = new FeedbackFragment();
 
         // Load the default fragment
-        loadFragment(courseOutlineFragment);
+        loadFragment(companyFragment);
+
+        if(user_role.equals("Educator")){
+            binding.bottomNavigation.getMenu().getItem(2).setIcon(R.drawable.ic_ai);
+            binding.bottomNavigation.getMenu().getItem(2).setTitle("Course Outline AI");
+        }
 
 
         // Handle BottomNavigation item clicks
@@ -73,10 +89,18 @@ public class MainActivity extends AppCompatActivity {
             } else if (itemId == R.id.nav_community) {
                 loadFragment(communityFragment);
                 return true;
-            } else if (itemId == R.id.nav_leaderboard) {
-                loadFragment(leaderboardFragment);
+            }
+            else if (itemId == R.id.nav_review) {
+                if(user_role.equals("Educator")) loadFragment(courseOutlineFragment);
+                else loadFragment(feedbackFragment);
                 return true;
-            }  else if (itemId == R.id.nav_profile) {
+            }
+//            else if (itemId == R.id.nav_leaderboard) {
+//                loadFragment(leaderboardFragment);
+//                return true;
+//            }
+
+            else if (itemId == R.id.nav_profile) {
                 loadFragment(profileFragment);
                 return true;
             }

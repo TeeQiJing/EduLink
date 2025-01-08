@@ -8,12 +8,18 @@
         android:id="@+id/nav_community"
         android:icon="@drawable/ic_community"
         android:title="Community" />
+
     <item
-        android:id="@+id/nav_leaderboard"
-        android:icon="@drawable/ic_leaderboard"
-        android:title="Leaderboard" />
+        android:id="@+id/nav_review"
+        android:icon="@drawable/ic_feedback"
+        android:title="Review" />
     <item
         android:id="@+id/nav_profile"
         android:icon="@drawable/ic_profile"
         android:title="Profile" />
 </menu>
+
+    <!--    <item-->
+    <!--        android:id="@+id/nav_leaderboard"-->
+    <!--        android:icon="@drawable/ic_leaderboard"-->
+    <!--        android:title="Leaderboard" />-->

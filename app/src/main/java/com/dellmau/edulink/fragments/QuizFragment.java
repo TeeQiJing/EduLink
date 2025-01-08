@@ -1,5 +1,7 @@
 package com.dellmau.edulink.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -46,6 +48,8 @@ public class QuizFragment extends Fragment {
     private List<String> questionIds = new ArrayList<>();
     private int currentQuestionIndex = 0;
     private boolean isAnswered = false;
+    SharedPreferences sharedPreferences;
+    String user_role;
 
     @Nullable
     @Override
@@ -54,6 +58,8 @@ public class QuizFragment extends Fragment {
 
         // Initialize Firestore
         db = FirebaseFirestore.getInstance();
+        sharedPreferences = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+        user_role = sharedPreferences.getString("user_role", "");
 
         // Bind views
         questionTitle = view.findViewById(R.id.questionTitle);
@@ -269,14 +275,14 @@ public class QuizFragment extends Fragment {
 
         // Reference to the `quiz_progress` collection
         db.collection("quiz_progress")
-                .whereEqualTo("userIdRef", db.collection("users").document(userId))
+                .whereEqualTo("userIdRef", db.collection(user_role.toLowerCase()).document(userId))
                 .whereEqualTo("quizIdRef", db.collection("quiz").document(quizId))
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null && task.getResult().isEmpty()) {
                         // If no progress exists, add a new record
                         Map<String, Object> progressData = new HashMap<>();
-                        progressData.put("userIdRef", db.collection("users").document(userId));
+                        progressData.put("userIdRef", db.collection(user_role.toLowerCase()).document(userId));
                         progressData.put("quizIdRef", db.collection("quiz").document(quizId));
                         progressData.put("completedAt", FieldValue.serverTimestamp());
 
@@ -383,7 +389,7 @@ public class QuizFragment extends Fragment {
         Log.d(TAG, "Restoring progress for question ID: " + questionId);
 
         db.collection("user_question")
-                .whereEqualTo("userIdRef", db.collection("users").document(userId))
+                .whereEqualTo("userIdRef", db.collection(user_role.toLowerCase()).document(userId))
                 .whereEqualTo("questionIdRef", db.collection("questions").document(questionId))
                 .get()
                 .addOnCompleteListener(task -> {
@@ -407,7 +413,7 @@ public class QuizFragment extends Fragment {
 
     private void saveUserAnswer(Question question, String selectedAnswer) {
         String questionId = questionIds.get(currentQuestionIndex);
-        DocumentReference userRef = db.collection("users").document(userId);
+        DocumentReference userRef = db.collection(user_role.toLowerCase()).document(userId);
         DocumentReference questionRef = db.collection("questions").document(questionId);
 
         boolean isCorrect = selectedAnswer.equals(question.getAnswer());
@@ -424,28 +430,28 @@ public class QuizFragment extends Fragment {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Log.d(TAG, "Answer saved successfully.");
-                        if (isCorrect) {
-                            incrementUserXP(questionScore); // Pass the score for XP increment
-                        }
+//                        if (isCorrect) {
+//                            incrementUserXP(questionScore); // Pass the score for XP increment
+//                        }
                     } else {
                         Log.e(TAG, "Failed to save answer", task.getException());
                     }
                 });
     }
-    private void incrementUserXP(int score) {
-        DocumentReference userRef = db.collection("users").document(userId);
-
-        db.runTransaction(transaction -> {
-                    DocumentSnapshot snapshot = transaction.get(userRef);
-                    Long currentXP = snapshot.getLong("xp");
-                    if (currentXP == null) currentXP = 0L; // Default XP if not set
-
-                    // Increment XP by the score of the current question
-                    transaction.update(userRef, "xp", currentXP + score);
-                    return null;
-                }).addOnSuccessListener(aVoid -> Log.d(TAG, "Student XP incremented by " + score + " successfully."))
-                .addOnFailureListener(e -> Log.e(TAG, "Failed to increment user XP", e));
-    }
+//    private void incrementUserXP(int score) {
+//        DocumentReference userRef = db.collection(user_role.toLowerCase()).document(userId);
+//
+//        db.runTransaction(transaction -> {
+//                    DocumentSnapshot snapshot = transaction.get(userRef);
+//                    Long currentXP = snapshot.getLong("xp");
+//                    if (currentXP == null) currentXP = 0L; // Default XP if not set
+//
+//                    // Increment XP by the score of the current question
+//                    transaction.update(userRef, "xp", currentXP + score);
+//                    return null;
+//                }).addOnSuccessListener(aVoid -> Log.d(TAG, "Student XP incremented by " + score + " successfully."))
+//                .addOnFailureListener(e -> Log.e(TAG, "Failed to increment user XP", e));
+//    }
 
 
     private void highlightAnswer(Question question, String selectedAnswer, boolean isCorrect) {

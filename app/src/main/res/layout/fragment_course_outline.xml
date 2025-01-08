@@ -1,53 +1,76 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <!-- Top Toolbar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/topAppBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:title="Course Outline AI"
+        app:titleCentered="true" />
 
-        <!-- File Upload Button -->
-        <Button
-            android:id="@+id/upload_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Upload Course Outline" />
+    <!-- Scrollable Content Below Toolbar -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/topAppBar"
+        android:fillViewport="true">
 
-        <!-- ProgressBar for loading -->
-        <ProgressBar
-            android:id="@+id/progress_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_gravity="center" />
-
-        <!-- TextView to show the result -->
-        <TextView
-            android:id="@+id/result_text"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Updated Course Outline will be shown here"
-            android:paddingTop="20dp" />
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <!-- Table Layout to display uploaded and updated course outlines -->
-        <TableLayout
-            android:id="@+id/uploaded_table"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:stretchColumns="1"
-            android:paddingTop="20dp" />
+            <!-- File Upload Button -->
+            <Button
+                android:id="@+id/upload_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Upload Course Outline" />
 
-        <TableLayout
-            android:id="@+id/updated_table"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:stretchColumns="1"
-            android:paddingTop="20dp" />
+            <!-- ProgressBar for loading -->
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_gravity="center" />
 
-    </LinearLayout>
-</ScrollView>
+            <!-- TextView to show the result -->
+            <TextView
+                android:id="@+id/result_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Updated Course Outline will be shown here"
+                android:paddingTop="20dp" />
+
+            <!-- Table Layout to display uploaded and updated course outlines -->
+            <TableLayout
+                android:id="@+id/uploaded_table"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:stretchColumns="1"
+                android:paddingTop="20dp" />
+
+            <TableLayout
+                android:id="@+id/updated_table"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:stretchColumns="1"
+                android:paddingTop="20dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

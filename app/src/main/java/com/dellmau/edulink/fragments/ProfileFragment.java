@@ -49,11 +49,11 @@ public class ProfileFragment extends Fragment {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private TextView tvUsername ;
-    private LinearLayout btnCertificate, btnFeedback, btnSettings, btnLogout, btnBadge;
+    private LinearLayout btnSettings, btnLogout, btnBadge, btnCertificate;
 
      String user_role;
-    private SharedPreferences sharedPreferences;
-    private String UID;
+    SharedPreferences sharedPreferences;
+    String UID;
 
     FrameLayout radarFragmentContainer;
 
@@ -68,7 +68,8 @@ public class ProfileFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
-
+        sharedPreferences = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+        user_role = sharedPreferences.getString("user_role", "");
 
     }
 
@@ -77,22 +78,23 @@ public class ProfileFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
 
+
         // Initialize views
         avatarImageView = rootView.findViewById(R.id.profileImage);
         tvUsername = rootView.findViewById(R.id.tvUsername);
 //        tvPoints = rootView.findViewById(R.id.tvPoints);
 //        tvCourses = rootView.findViewById(R.id.tvCourses);
         btnCertificate = rootView.findViewById(R.id.btnCertificate);
-        btnFeedback = rootView.findViewById(R.id.btnFeedback);
+//        btnFeedback = rootView.findViewById(R.id.btnFeedback);
         btnSettings = rootView.findViewById(R.id.btnSettings);
         btnLogout = rootView.findViewById(R.id.btnLogout);
 //        tvBadge = rootView.findViewById(R.id.tvBadge);
-//        btnBadge = rootView.findViewById(R.id.btnBadges);
+        btnBadge = rootView.findViewById(R.id.btnBadges);
 
         // Retrieve user_role from SharedPreferences
-         sharedPreferences = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
-         user_role = sharedPreferences.getString("user_role", "");
+
          UID = mAuth.getCurrentUser().getUid();
+        Toast.makeText(getActivity(), "User Role: " + user_role, Toast.LENGTH_SHORT).show();
          radarFragmentContainer = rootView.findViewById(R.id.radarFragmentContainer);
 
 
@@ -109,20 +111,7 @@ public class ProfileFragment extends Fragment {
         // Set click listeners
         avatarImageView.setOnClickListener(v -> openImagePicker());
         btnCertificate.setOnClickListener(v -> navigateToCertificate());
-        btnFeedback.setOnClickListener(v -> {
-            requireActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .setCustomAnimations(
-                            R.anim.slide_in_right,  // Animation for fragment entry
-                            R.anim.slide_out_left, // Animation for fragment exit
-                            R.anim.slide_in_left,  // Animation for returning to the fragment
-                            R.anim.slide_out_right // Animation for exiting back
-                    )
-                    .replace(R.id.fragment_container, new FeedbackFragment()) // Replace `fragment_container` with your container ID
-                    .addToBackStack(null)
-                    .commit();
-        });
-//        btnBadge.setOnClickListener(v -> checkAndNavigate());
+        btnBadge.setOnClickListener(v -> checkAndNavigate());
         btnSettings.setOnClickListener(v -> {
                     requireActivity().getSupportFragmentManager()
                             .beginTransaction()
@@ -145,7 +134,7 @@ public class ProfileFragment extends Fragment {
     private void checkAndNavigate() {
         String userId = mAuth.getCurrentUser().getUid();
         db.collection("user_badges")
-                .whereEqualTo("userIdRef", db.collection("users").document(userId))
+                .whereEqualTo("userIdRef", db.collection(user_role.toLowerCase()).document(userId))
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -202,7 +191,7 @@ public class ProfileFragment extends Fragment {
             if (task.isSuccessful()) {
                 DocumentSnapshot documentSnapshot = task.getResult();
                 if (documentSnapshot != null && documentSnapshot.exists()) {
-                    if(user_role.equals("Student")){
+                    if("Student".equals(user_role)){
                         Student user = documentSnapshot.toObject(Student.class);
                         if (user != null) {
                             tvUsername.setText(user.getUsername());
@@ -211,6 +200,7 @@ public class ProfileFragment extends Fragment {
 //                                else tvBadge.setText("1");
 
 
+
                             // Load avatar if available
                             if (user.getAvatar().isEmpty()) {
                                 avatarImageView.setImageResource(R.drawable.ic_avatar); // Default avatar
@@ -219,9 +209,9 @@ public class ProfileFragment extends Fragment {
                             }
 
                             // Fetch number of courses
-                                fetchCoursesCount(UID);
+//                                fetchCoursesCount(UID);
                         }
-                    }else if(user_role.equals("Educator")){
+                    }else if("Educator".equals(user_role)){
                         Educator user = documentSnapshot.toObject(Educator.class);
                         if (user != null) {
                             tvUsername.setText(user.getUsername());
@@ -229,7 +219,7 @@ public class ProfileFragment extends Fragment {
 //                                if (user.getXp() >= 100) tvBadge.setText(String.valueOf(user.getXp() / 100));
 //                                else tvBadge.setText("1");
 
-
+//                            btnFeedback.setVisibility(View.GONE);
                             // Load avatar if available
                             if (user.getAvatar().isEmpty()) {
                                 avatarImageView.setImageResource(R.drawable.ic_avatar); // Default avatar
@@ -238,9 +228,9 @@ public class ProfileFragment extends Fragment {
                             }
 
                             // Fetch number of courses
-                                fetchCoursesCount(UID);
+//                                fetchCoursesCount(UID);
                         }
-                    }else if(user_role.equals("Employer")){
+                    }else if("Employer".equals(user_role)){
                         Employer user = documentSnapshot.toObject(Employer.class);
                         if (user != null) {
                             tvUsername.setText(user.getUsername());
@@ -374,8 +364,17 @@ public class ProfileFragment extends Fragment {
     }
 
     private void navigateToCertificate() {
-        // Implement navigation to certificate activity or fragment
-        Toast.makeText(getContext(), "Navigating to Certificate", Toast.LENGTH_SHORT).show();
+        requireActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(
+                        R.anim.slide_in_right,  // Animation for fragment entry
+                        R.anim.slide_out_left, // Animation for fragment exit
+                        R.anim.slide_in_left,  // Animation for returning to the fragment
+                        R.anim.slide_out_right // Animation for exiting back
+                )
+                .replace(R.id.fragment_container, new CertFragment()) // Replace `fragment_container` with your container ID
+                .addToBackStack(null)
+                .commit();
     }
 
     private void showLogoutConfirmationDialog() {

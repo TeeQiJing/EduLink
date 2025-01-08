@@ -26,21 +26,13 @@
         android:textSize="24dp"
         android:textColor="@color/white" />
 
-    <ImageView
-        android:id="@+id/icNotification"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:src="@mipmap/ic_notification"
-        app:tint="@color/white"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="25dp"
-        android:layout_marginTop="21dp"/>
+
 
     <com.google.android.material.search.SearchBar
         android:id="@+id/search_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/arrow"
+        android:layout_below="@id/title"
         android:layout_marginTop="20dp"
         android:hint="Search"
         app:hideNavigationIcon="false"/>

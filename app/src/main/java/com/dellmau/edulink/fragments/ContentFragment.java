@@ -1,5 +1,7 @@
 package com.dellmau.edulink.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -47,12 +49,16 @@ public class ContentFragment extends Fragment {
     private DocumentReference userIdRef;  // Firebase reference for user ID
     private DocumentReference chapterIdRef;  // Firebase reference for chapter ID
     private boolean progressRecorded = false;
+    SharedPreferences sharedPreferences;
+    String user_role;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(com.dellmau.edulink.R.layout.fragment_content, container, false);
         contentContainer = view.findViewById(R.id.contentContainer);
+        sharedPreferences = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+        user_role = sharedPreferences.getString("user_role", "");
 
         db = FirebaseFirestore.getInstance();
 
@@ -61,7 +67,7 @@ public class ContentFragment extends Fragment {
 
         // Get the current user's reference from Firebase Authentication (assuming the user is authenticated)
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        userIdRef = db.collection("users").document(mAuth.getCurrentUser().getUid()); // Use real current user ID
+        userIdRef = db.collection(user_role.toLowerCase()).document(mAuth.getCurrentUser().getUid()); // Use real current user ID
 
         if (chapterId != null && !chapterId.isEmpty()) {
             chapterIdRef = db.collection("chapters").document(chapterId);  // Set the chapter reference
