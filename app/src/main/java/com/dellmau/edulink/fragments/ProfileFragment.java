@@ -2,7 +2,9 @@ package com.dellmau.edulink.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -11,6 +13,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentContainer;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Base64;
 import android.util.Log;
@@ -18,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -25,7 +30,9 @@ import android.widget.Toast;
 
 import com.dellmau.edulink.R;
 import com.dellmau.edulink.activities.LoginActivity;
-import com.dellmau.edulink.models.User;
+import com.dellmau.edulink.models.Educator;
+import com.dellmau.edulink.models.Employer;
+import com.dellmau.edulink.models.Student;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -41,8 +48,16 @@ public class ProfileFragment extends Fragment {
     private ImageView avatarImageView;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
-    private TextView tvUsername, tvPoints, tvCourses, tvBadge;
+    private TextView tvUsername ;
     private LinearLayout btnCertificate, btnFeedback, btnSettings, btnLogout, btnBadge;
+
+     String user_role;
+    private SharedPreferences sharedPreferences;
+    private String UID;
+
+    FrameLayout radarFragmentContainer;
+
+
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -53,6 +68,8 @@ public class ProfileFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+
+
     }
 
     @Override
@@ -63,14 +80,26 @@ public class ProfileFragment extends Fragment {
         // Initialize views
         avatarImageView = rootView.findViewById(R.id.profileImage);
         tvUsername = rootView.findViewById(R.id.tvUsername);
-        tvPoints = rootView.findViewById(R.id.tvPoints);
-        tvCourses = rootView.findViewById(R.id.tvCourses);
+//        tvPoints = rootView.findViewById(R.id.tvPoints);
+//        tvCourses = rootView.findViewById(R.id.tvCourses);
         btnCertificate = rootView.findViewById(R.id.btnCertificate);
         btnFeedback = rootView.findViewById(R.id.btnFeedback);
         btnSettings = rootView.findViewById(R.id.btnSettings);
         btnLogout = rootView.findViewById(R.id.btnLogout);
-        tvBadge = rootView.findViewById(R.id.tvBadge);
-        btnBadge = rootView.findViewById(R.id.btnBadges);
+//        tvBadge = rootView.findViewById(R.id.tvBadge);
+//        btnBadge = rootView.findViewById(R.id.btnBadges);
+
+        // Retrieve user_role from SharedPreferences
+         sharedPreferences = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+         user_role = sharedPreferences.getString("user_role", "");
+         UID = mAuth.getCurrentUser().getUid();
+         radarFragmentContainer = rootView.findViewById(R.id.radarFragmentContainer);
+
+
+
+
+
+
 
 
 
@@ -93,7 +122,7 @@ public class ProfileFragment extends Fragment {
                     .addToBackStack(null)
                     .commit();
         });
-        btnBadge.setOnClickListener(v -> checkAndNavigate());
+//        btnBadge.setOnClickListener(v -> checkAndNavigate());
         btnSettings.setOnClickListener(v -> {
                     requireActivity().getSupportFragmentManager()
                             .beginTransaction()
@@ -163,33 +192,75 @@ public class ProfileFragment extends Fragment {
                 });
     }
 
-    private void loadUserProfile() {
-        String userId = mAuth.getCurrentUser().getUid();
-        DocumentReference userDocRef = db.collection("users").document(userId);
 
+
+    private void loadUserProfile() {
+
+        DocumentReference userDocRef = db.collection(user_role.toLowerCase()).document(UID);
         // Fetch user details
         userDocRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot documentSnapshot = task.getResult();
                 if (documentSnapshot != null && documentSnapshot.exists()) {
-                    User user = documentSnapshot.toObject(User.class);
-                    if (user != null) {
-                        tvUsername.setText(user.getUsername());
-                        tvPoints.setText(user.getXp() + "\nPoints");
-                        if (user.getXp() >= 100) tvBadge.setText(String.valueOf(user.getXp() / 100));
-                        else tvBadge.setText("1");
+                    if(user_role.equals("Student")){
+                        Student user = documentSnapshot.toObject(Student.class);
+                        if (user != null) {
+                            tvUsername.setText(user.getUsername());
+//                                tvPoints.setText(user.getXp() + "\nPoints");
+//                                if (user.getXp() >= 100) tvBadge.setText(String.valueOf(user.getXp() / 100));
+//                                else tvBadge.setText("1");
 
 
-                        // Load avatar if available
-                        if (user.getAvatar().isEmpty()) {
-                            avatarImageView.setImageResource(R.drawable.ic_avatar); // Default avatar
-                        } else {
-                            loadAvatar(user.getAvatar());
+                            // Load avatar if available
+                            if (user.getAvatar().isEmpty()) {
+                                avatarImageView.setImageResource(R.drawable.ic_avatar); // Default avatar
+                            } else {
+                                loadAvatar(user.getAvatar());
+                            }
+
+                            // Fetch number of courses
+//                                fetchCoursesCount(UID);
                         }
+                    }else if(user_role.equals("Educator")){
+                        Educator user = documentSnapshot.toObject(Educator.class);
+                        if (user != null) {
+                            tvUsername.setText(user.getUsername());
+//                                tvPoints.setText(user.getXp() + "\nPoints");
+//                                if (user.getXp() >= 100) tvBadge.setText(String.valueOf(user.getXp() / 100));
+//                                else tvBadge.setText("1");
 
-                        // Fetch number of courses
-                        fetchCoursesCount(userId);
+
+                            // Load avatar if available
+                            if (user.getAvatar().isEmpty()) {
+                                avatarImageView.setImageResource(R.drawable.ic_avatar); // Default avatar
+                            } else {
+                                loadAvatar(user.getAvatar());
+                            }
+
+                            // Fetch number of courses
+//                                fetchCoursesCount(UID);
+                        }
+                    }else if(user_role.equals("Employer")){
+                        Employer user = documentSnapshot.toObject(Employer.class);
+                        if (user != null) {
+                            tvUsername.setText(user.getUsername());
+//                                tvPoints.setVisibility(View.GONE);
+//                                if (user.getXp() >= 100) tvBadge.setText(String.valueOf(user.getXp() / 100));
+//                                else tvBadge.setText("1");
+
+
+                            // Load avatar if available
+                            if (user.getAvatar().isEmpty()) {
+                                avatarImageView.setImageResource(R.drawable.ic_avatar); // Default avatar
+                            } else {
+                                loadAvatar(user.getAvatar());
+                            }
+
+                            // Fetch number of courses
+//                                fetchCoursesCount(UID);
+                        }
                     }
+
                 } else {
                     Log.e("ProfileFragment", "Document does not exist or is null");
                     Toast.makeText(getContext(), "Profile not found", Toast.LENGTH_SHORT).show();
@@ -199,6 +270,24 @@ public class ProfileFragment extends Fragment {
                 Toast.makeText(getContext(), "Failed to load profile", Toast.LENGTH_SHORT).show();
             }
         });
+
+
+        if(user_role.equals("Employer")){
+            radarFragmentContainer.setVisibility(View.GONE);
+        }else{
+            Fragment radarFragment = new RadarFragment();
+            FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+            transaction.replace(R.id.radarFragmentContainer, radarFragment).commit();
+        }
+
+
+
+
+
+
+
+
+
     }
 
     // Fetch the number of courses the user is enrolled in
@@ -211,10 +300,10 @@ public class ProfileFragment extends Fragment {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
                         int courseCount = task.getResult().size();
-                        tvCourses.setText(courseCount + "\nCourses");
+//                        tvCourses.setText(courseCount + "\nCourses");
                     } else {
                         Log.e("ProfileFragment", "Error fetching courses", task.getException());
-                        tvCourses.setText("0\nCourses");
+//                        tvCourses.setText("0\nCourses");
                         Toast.makeText(getContext(), "Failed to fetch course count", Toast.LENGTH_SHORT).show();
                     }
                 });

@@ -247,8 +247,8 @@ public class LessonFragment extends Fragment {
                     if (task.isSuccessful() && task.getResult() != null) {
                         // If the user is enrolled in a course, check the size of the result
                         if (task.getResult().size() == 1) {
-                            // User is enrolling for the first time, so we grant the badge
-                            Log.d(TAG, "User is enrolling for the first time.");
+                            // Student is enrolling for the first time, so we grant the badge
+                            Log.d(TAG, "Student is enrolling for the first time.");
                             // Check if the user has the "First step" badge
                             db.collection("user_badges")
                                     .whereEqualTo("userIdRef", userRef)
@@ -256,16 +256,16 @@ public class LessonFragment extends Fragment {
                                     .get()
                                     .addOnCompleteListener(badgeTask -> {
                                         if (badgeTask.isSuccessful() && badgeTask.getResult() != null && badgeTask.getResult().isEmpty()) {
-                                            // User doesn't have the "First step badge", grant it
+                                            // Student doesn't have the "First step badge", grant it
                                             grantFirstStepBadge(userId, badgeRef, userRef);
                                         } else {
-                                            // User already has the "First step badge"
-                                            Log.d(TAG, "User already has the 'First step badge'.");
+                                            // Student already has the "First step badge"
+                                            Log.d(TAG, "Student already has the 'First step badge'.");
                                         }
                                     });
                         } else {
-                            // User is already enrolled in multiple lessons or no lessons at all, no action needed
-                            Log.d(TAG, "User is already enrolled in multiple lessons or no lessons at all.");
+                            // Student is already enrolled in multiple lessons or no lessons at all, no action needed
+                            Log.d(TAG, "Student is already enrolled in multiple lessons or no lessons at all.");
                         }
                     } else {
                         Log.e(TAG, "Error checking enrollment in lessons: ", task.getException());
@@ -365,7 +365,7 @@ public class LessonFragment extends Fragment {
                                                 grantMilestoneMasterBadge(userRef, badgeRef);
                                             } else {
                                                 // Badge already granted
-                                                Log.d(TAG, "User already has the 'MilestoneMaster' badge.");
+                                                Log.d(TAG, "Student already has the 'MilestoneMaster' badge.");
                                             }
                                         } else {
                                             // Handle errors in badge query
@@ -373,8 +373,8 @@ public class LessonFragment extends Fragment {
                                         }
                                     });
                         } else {
-                            // User has not completed enough chapters
-                            Log.d(TAG, "User has not completed enough chapters for 'MilestoneMaster' badge.");
+                            // Student has not completed enough chapters
+                            Log.d(TAG, "Student has not completed enough chapters for 'MilestoneMaster' badge.");
                         }
                     } else {
                         // Handle errors in chapter progress query
@@ -446,7 +446,7 @@ public class LessonFragment extends Fragment {
         FirebaseUser currentUser = auth.getCurrentUser();
 
         if (currentUser == null) {
-            Log.e("QuizFragment", "User not logged in. Cannot grant badge.");
+            Log.e("QuizFragment", "Student not logged in. Cannot grant badge.");
             return; // Exit early if the user is not logged in
         }
 
@@ -478,7 +478,7 @@ public class LessonFragment extends Fragment {
                                                 grantQuizWhizBadge(userRef, badgeRef);
                                             } else {
                                                 // Badge already granted
-                                                Log.d(TAG, "User already has the 'QuizWhiz badge.");
+                                                Log.d(TAG, "Student already has the 'QuizWhiz badge.");
                                             }
                                         } else {
                                             // Handle errors in badge query
@@ -486,8 +486,8 @@ public class LessonFragment extends Fragment {
                                         }
                                     });
                         } else {
-                            // User has not completed enough quiz
-                            Log.d(TAG, "User has not completed enough chapters for 'QuizWhiz' badge.");
+                            // Student has not completed enough quiz
+                            Log.d(TAG, "Student has not completed enough chapters for 'QuizWhiz' badge.");
                         }
                     } else {
                         // Handle errors in quiz progress query

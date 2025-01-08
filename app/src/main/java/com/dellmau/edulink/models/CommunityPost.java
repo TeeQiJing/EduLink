@@ -122,7 +122,7 @@ public class CommunityPost implements Serializable {
                         this.avatarURL = documentSnapshot.getString("avatar");
                         if (callback != null) callback.onSuccess(username, avatarURL);
                     } else {
-                        if (callback != null) callback.onFailure(new Exception("User not found"));
+                        if (callback != null) callback.onFailure(new Exception("Student not found"));
                     }
                 })
                 .addOnFailureListener(callback::onFailure);

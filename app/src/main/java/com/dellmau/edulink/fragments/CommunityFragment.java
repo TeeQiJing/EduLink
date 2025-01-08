@@ -264,7 +264,7 @@ public class CommunityFragment extends Fragment {
             }
 
             FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-            String userID = currentUser != null ? currentUser.getUid() : "Unknown User";
+            String userID = currentUser != null ? currentUser.getUid() : "Unknown Student";
             long timestamp = System.currentTimeMillis();
 
             CommunityPost post = new CommunityPost(userID, title, content, timestamp, new ArrayList<>(),lecSkill,studentSkill,startDate,endDate);
