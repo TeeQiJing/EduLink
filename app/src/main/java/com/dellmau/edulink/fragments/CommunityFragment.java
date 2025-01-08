@@ -8,15 +8,18 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupWindow;
 import android.widget.SearchView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.dellmau.edulink.R;
@@ -84,7 +87,28 @@ public class CommunityFragment extends Fragment {
 
         // Setup Floating Action Button
         FloatingActionButton fabPost = view.findViewById(R.id.fab_post);
-        fabPost.setOnClickListener(v -> showNewPostPopup());
+        fabPost.setVisibility(View.GONE);
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            String userId = currentUser.getUid();
+            Log.d("Cert",userId);
+
+            // Check if the user exists in any of the tables (employee, student, educator)
+            db.collection("employer").document(userId).get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && task.getResult().exists()) {
+                            // The user is in the employee table
+                            Log.d("UserCheck", "User found in employee table");
+                            fabPost.setVisibility(View.VISIBLE);
+                            fabPost.setOnClickListener(v -> showNewPostPopup());
+                        }
+                        else {
+                            Log.w("UserCheck", "Error checking employee table", task.getException());
+                            fabPost.setVisibility(View.GONE);
+                        }
+                    });
+        }
+
 
         // Setup search functionality
         SearchView searchView = view.findViewById(R.id.search_post);
@@ -126,9 +150,15 @@ public class CommunityFragment extends Fragment {
                             String content = doc.getString("content");
                             long timestamp = parseTimestamp(doc.get("timestamp"));
                             List<String> likedBy = (List<String>) doc.get("likedBy");
+                            List<String> linkSubmitted = (List<String>) doc.get("linkSubmitted");
+                            List<String> peopleSubmitted = (List<String>) doc.get("peopleSubmitted");
+                            String lecturerSkills = doc.getString("lecturerSkills");
+                            String studentSkills = doc.getString("studentSkills");
+                            String startDate = doc.getString("startDate");
+                            String endDate = doc.getString("endDate");
 
                             // Create a CommunityPost object
-                            CommunityPost post = new CommunityPost(userID, title, content, timestamp, likedBy);
+                            CommunityPost post = new CommunityPost(userID, title, content, timestamp, likedBy, linkSubmitted,peopleSubmitted, lecturerSkills, studentSkills,startDate,endDate);
                             post.setPostID(postID);
                             postList.add(post);
 
@@ -191,10 +221,30 @@ public class CommunityFragment extends Fragment {
         popupWindow.setOnDismissListener(() -> rootView.removeView(dimBackgroundView));
 
         // Initialize popup views
-        EditText postTitle = popupView.findViewById(R.id.popup_post_title);
-        EditText postContent = popupView.findViewById(R.id.popup_post_content);
+        EditText postTitle = popupView.findViewById(R.id.project_title);
+        Spinner lecturerSkills = popupView.findViewById(R.id.lecturer_skill);
+        Spinner studentSkills = popupView.findViewById(R.id.student_skill);
+        EditText start_date = popupView.findViewById(R.id.start_date);
+        EditText end_date = popupView.findViewById(R.id.end_date);
+        EditText postContent = popupView.findViewById(R.id.project_description);
         ImageButton exitButton = popupView.findViewById(R.id.popup_exit);
-        Button postButton = popupView.findViewById(R.id.popup_post);
+        Button postButton = popupView.findViewById(R.id.submit_review_btn);
+
+        ArrayAdapter<CharSequence> lecture_adapter =ArrayAdapter.createFromResource(
+                getActivity(),
+                R.array.lecturer_skills_array,
+                android.R.layout.simple_spinner_item
+        );
+        lecture_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        lecturerSkills.setAdapter(lecture_adapter);
+
+        ArrayAdapter<CharSequence> student_adapter =ArrayAdapter.createFromResource(
+                getActivity(),
+                R.array.student_skills_array,
+                android.R.layout.simple_spinner_item
+        );
+        student_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        studentSkills.setAdapter(student_adapter);
 
         // Exit button click listener
         exitButton.setOnClickListener(v -> popupWindow.dismiss());
@@ -203,8 +253,12 @@ public class CommunityFragment extends Fragment {
         postButton.setOnClickListener(v -> {
             String title = postTitle.getText().toString().trim();
             String content = postContent.getText().toString().trim();
+            String lecSkill = lecturerSkills.getSelectedItem().toString().trim();
+            String studentSkill = studentSkills.getSelectedItem().toString().trim();
+            String startDate = start_date.getText().toString().trim();
+            String endDate = end_date.getText().toString().trim();
 
-            if (title.isEmpty() || content.isEmpty()) {
+            if (title.isEmpty() || lecSkill.isEmpty() || studentSkill.isEmpty() || startDate.isEmpty() || endDate.isEmpty() || content.isEmpty()) {
                 Toast.makeText(getContext(), "Please fill in all fields", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -213,7 +267,7 @@ public class CommunityFragment extends Fragment {
             String userID = currentUser != null ? currentUser.getUid() : "Unknown Student";
             long timestamp = System.currentTimeMillis();
 
-            CommunityPost post = new CommunityPost(userID, title, content, timestamp, new ArrayList<>());
+            CommunityPost post = new CommunityPost(userID, title, content, timestamp, new ArrayList<>(),new ArrayList<>(), new ArrayList<>(), lecSkill,studentSkill,startDate,endDate);
             post.saveToFirebase(db, new CommunityPost.SaveCallback() {
                 @Override
                 public void onSuccess(String postId) {

@@ -30,6 +30,7 @@ import com.dellmau.edulink.models.Employer;
 import com.dellmau.edulink.models.Student;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.search.SearchBar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -51,6 +52,7 @@ public class CompanyFragment extends Fragment {
     private RecyclerView recView;
     private ArrayList<CollectionReference> collections;
     private TextView greeting;
+    private SearchBar searchBar;
 
     private SharedPreferences sharedPreferences;
     private String user_role;
@@ -102,18 +104,18 @@ public class CompanyFragment extends Fragment {
         // Check login streak and show dialog
         checkAndShowLoginStreakDialog();
 
-//        searchBar = view.findViewById(R.id.search_bar);
-//        SearchLesson searchLesson = new SearchLesson();
-//        searchBar.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                requireActivity().getSupportFragmentManager()
-//                        .beginTransaction()
-//                        .replace(R.id.fragment_container, searchLesson)
-//                        .addToBackStack(null)
-//                        .commit();
-//            }
-//        });
+        searchBar = view.findViewById(R.id.company_search_bar);
+        SearchCompany searchCompany = new SearchCompany();
+        searchBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                requireActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, searchCompany)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
     }
 
     private void fetchData() {
