@@ -174,11 +174,15 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_weight="1"
-            android:backgroundTint="#E9E9E9"
-            android:text="5"
-            android:textColor="#80000000"
-            app:icon="@drawable/ic_comment"
-            app:iconTint="#80020202" />
+            android:backgroundTint="@color/purple_500"
+            android:text="Join"
+            android:textColor="#FFFFFF"
+
+
+
+
+
+             />
 
     </LinearLayout>
 

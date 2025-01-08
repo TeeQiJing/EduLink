@@ -168,7 +168,16 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:max="10"
+            android:progress="5" /> <!-- Default progress at 5 -->
+        <TextView
+            android:id="@+id/lecturerScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="15dp"
+            android:text="0"
+            android:textSize="16sp" />
 
     </LinearLayout>
 
@@ -194,7 +203,16 @@
             android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:max="10"
+            android:progress="5" /> <!-- Default progress at 3 -->
+        <TextView
+            android:id="@+id/studentScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="15dp"
+            android:text="0"
+            android:textSize="16sp" />
     </LinearLayout>
 
 

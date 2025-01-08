@@ -96,18 +96,18 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Post
         });
 
         // Fetch and display comment count
-        post.getCommentCount(db, new CommunityPost.FetchCommentCountCallback() {
-            @Override
-            public void onSuccess(int commentCount) {
-                holder.postComments.setText(String.valueOf(commentCount));
-            }
-
-            @Override
-            public void onFailure(Exception e) {
-                holder.postComments.setText("0"); // Default to 0 if fetching fails
-                Toast.makeText(context, "Error loading comments: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+//        post.getCommentCount(db, new CommunityPost.FetchCommentCountCallback() {
+//            @Override
+//            public void onSuccess(int commentCount) {
+//                holder.postComments.setText(String.valueOf(commentCount));
+//            }
+//
+//            @Override
+//            public void onFailure(Exception e) {
+//                holder.postComments.setText("0"); // Default to 0 if fetching fails
+//                Toast.makeText(context, "Error loading comments: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+//            }
+//        });
 
         holder.postComments.setOnClickListener(v -> {
             Fragment commentFragment = CommentFragment.newInstance(post);
