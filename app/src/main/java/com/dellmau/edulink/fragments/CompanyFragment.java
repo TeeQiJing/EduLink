@@ -1,6 +1,8 @@
 package com.dellmau.edulink.fragments;
 
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -40,14 +42,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link CompanyFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class CompanyFragment extends Fragment {
-
-
 
     private ArrayList<Collaboration> collaborations;
     private FirebaseFirestore db;
@@ -58,6 +54,9 @@ public class CompanyFragment extends Fragment {
     private TextView greeting;
     private SearchBar searchBar;
 
+    private SharedPreferences sharedPreferences;
+    private String user_role;
+
 
     public CompanyFragment() {
         // Required empty public constructor
@@ -65,26 +64,24 @@ public class CompanyFragment extends Fragment {
 
 
 
-//    @Override
-//    public void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//
-//    }
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_company, container, false);
         greeting = rootView.findViewById(R.id.company_greeting);
-
         return rootView;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
-
         collections = new ArrayList<>(Arrays.asList(db.collection("employer"), db.collection("educator"), db.collection("student")));
 
 
@@ -96,6 +93,9 @@ public class CompanyFragment extends Fragment {
 
         Log.d("LearnFragment", "RecyclerView set up with adapter.");
         fetchData();
+
+        sharedPreferences = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+        user_role = sharedPreferences.getString("user_role", "");
 
 
 //        loadUserProfile();
@@ -120,7 +120,7 @@ public class CompanyFragment extends Fragment {
 
     private void fetchData() {
         // Get the current user ID
-        String userId = mAuth.getCurrentUser().getUid();
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         for (int i = 0; i < 3; i++) {
             int index = i;
             collections.get(i).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -133,18 +133,18 @@ public class CompanyFragment extends Fragment {
                                 Log.d("company", document.getId().toString());
                                 Log.d("company", userId);
                                 Log.d("company", String.valueOf(index));
-                                if (index == 2 && userId.equals(document.getId()) ) {
+                                if (index == 2 && document.getId().equals(userId) ) {
                                     Log.d("company", "yay");
                                     loadUserProfile(document.toObject(Student.class));
                                     DocumentReference company = document.getDocumentReference("organization");
                                     fetchDetails(company);
                                 }
-                                else if (index == 1 && userId.equals(document.getId())) {
+                                else if (index == 1 && document.getId().equals(userId)) {
                                     loadUserProfile(document.toObject(Educator.class));
                                     DocumentReference company = document.getDocumentReference("organization");
                                     fetchDetails(company);
                                 }
-                                else if (index == 0 && userId.equals(document.getId())) {
+                                else if (index == 0 && document.getId().equals(userId)) {
                                     loadUserProfile(document.toObject(Employer.class));
                                     DocumentReference company = document.getDocumentReference("organization");
                                     fetchDetails(company);
@@ -324,25 +324,19 @@ public class CompanyFragment extends Fragment {
 
         // Collect Points button
         Button collectPointsButton = dialogView.findViewById(R.id.collect_points_button);
-        int points = (int) streak * 5;
+//        int points = (int) streak * 5;
         collectPointsButton.setOnClickListener(v -> {
 
 
 
             String userId = mAuth.getCurrentUser().getUid();
-            DocumentReference userPointsRef = db.collection("users").document(userId);
 
-            userPointsRef.update("xp", FieldValue.increment(points))
-                    .addOnSuccessListener(aVoid -> {
-                        loginStreakRef.update("isPointCollected", true);
-                        Log.d("LoginStreak", "isPointCollected updated to true after showing dialog");
-                        Toast.makeText(requireContext(), points + " Points Collected!", Toast.LENGTH_SHORT).show();
-                        streakDialog.dismiss();
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e("LoginStreak", "Error updating isPointCollected field", e);
-                        Toast.makeText(requireContext(), "Error collecting points: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
+
+            loginStreakRef.update("isPointCollected", true);
+            Log.d("LoginStreak", "isPointCollected updated to true after showing dialog");
+            streakDialog.dismiss();
+
+
             streakDialog.dismiss();
         });
     }

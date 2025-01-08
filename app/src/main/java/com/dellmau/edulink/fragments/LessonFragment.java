@@ -1,5 +1,7 @@
 package com.dellmau.edulink.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -76,6 +78,8 @@ public class LessonFragment extends Fragment {
     private boolean isEnrolled = false; // Flag to check enrollment status
     private boolean isFavorited = false;
     private Map<String, Boolean> completionStateMap; // To track completion state of chapters and quizzes
+    private SharedPreferences sharedPreferences;
+    private String user_role;
 
     public LessonFragment() {
         // Required empty public constructor
@@ -94,6 +98,14 @@ public class LessonFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_lesson, container, false);
+
+        String userId = mAuth.getCurrentUser().getUid();
+        sharedPreferences = requireActivity().getSharedPreferences("UserSession", Context.MODE_PRIVATE);
+        user_role = sharedPreferences.getString("user_role", "");
+
+//        Educator, Student, Employer
+
+//        to fetch from collection = db.collection(user_role.toLowerCase()).document(userId)
 
         tvLessonTitle = rootView.findViewById(R.id.lessonTitle);
         tvLessonRatingText = rootView.findViewById(R.id.lessonRatingText);
@@ -183,7 +195,7 @@ public class LessonFragment extends Fragment {
         checkEnrollmentStatus();
 
         btnEnroll.setOnClickListener(view -> {
-            String userId = mAuth.getCurrentUser().getUid();
+//            String userId = mAuth.getCurrentUser().getUid();
             enrollInLesson(userId, lessonId);
             checkAndGrantFirstStepBadge();
         });
@@ -210,7 +222,7 @@ public class LessonFragment extends Fragment {
         String userId = mAuth.getCurrentUser().getUid();
 
         db.collection("current_lesson")
-                .whereEqualTo("userId", db.collection("users").document(userId))
+                .whereEqualTo("userId", db.collection(user_role.toLowerCase()).document(userId))
                 .whereEqualTo("lessonId", db.collection("total_lesson").document(lessonId))
                 .addSnapshotListener((snapshots, error) -> {
                     if (error != null) {
@@ -793,30 +805,68 @@ public class LessonFragment extends Fragment {
 
 
     private void enrollInLesson(String userId, String lessonId) {
+
         CollectionReference currentLessonRef = db.collection("current_lesson");
 
-        DocumentReference userIdRef = db.collection("users").document(userId);
+        DocumentReference userIdRef = db.collection(user_role.toLowerCase()).document(userId);
         DocumentReference lessonIdRef = db.collection("total_lesson").document(lessonId);
-        Map<String, Object> currentLessonData = new HashMap<>();
-        currentLessonData.put("userId", userIdRef);
-        currentLessonData.put("lessonId", lessonIdRef);
-        currentLessonData.put("progress", "0");
 
-        currentLessonRef.add(currentLessonData)
-                .addOnSuccessListener(documentReference -> {
-                    // Update isEnrolled status immediately
-                    isEnrolled = true;
-                    btnEnroll.setVisibility(View.GONE);
-                    CLbtn.setVisibility(View.GONE);
+        lessonIdRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                // Get the 'company' field as a DocumentReference
+                DocumentReference companyRef = documentSnapshot.getDocumentReference("company");
 
-                    Toast.makeText(getContext(), "Successfully enrolled in the lesson!", Toast.LENGTH_SHORT).show();
+                // Create a map to store current lesson data
+                Map<String, Object> currentLessonData = new HashMap<>();
+                currentLessonData.put("userId", userIdRef);
+                currentLessonData.put("lessonId", lessonIdRef);
+                currentLessonData.put("progress", "0");
+                currentLessonData.put("company", companyRef);
 
-                    // Notify the adapter to update
-                    chapterAdapter.notifyDataSetChanged();
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(getContext(), "Failed to enroll in the lesson.", Toast.LENGTH_SHORT).show()
-                );
+                // Add the data to the 'current_lesson' collection
+                currentLessonRef.add(currentLessonData)
+                        .addOnSuccessListener(documentReference -> {
+                            // Update isEnrolled status immediately
+                            isEnrolled = true;
+                            btnEnroll.setVisibility(View.GONE);
+                            CLbtn.setVisibility(View.GONE);
+
+                            Toast.makeText(getContext(), "Successfully enrolled in the lesson!", Toast.LENGTH_SHORT).show();
+
+                            // Notify the adapter to update
+                            chapterAdapter.notifyDataSetChanged();
+                        })
+                        .addOnFailureListener(e ->
+                                Toast.makeText(getContext(), "Failed to enroll in the lesson.", Toast.LENGTH_SHORT).show()
+                        );
+            } else {
+                Log.e("Firestore", "Lesson document not found");
+            }
+        }).addOnFailureListener(e -> {
+            Log.e("Firestore", "Error retrieving lesson document", e);
+        });
+
+//        Map<String, Object> currentLessonData = new HashMap<>();
+//        currentLessonData.put("userId", userIdRef);
+//        currentLessonData.put("lessonId", lessonIdRef);
+//        currentLessonData.put("progress", "0");
+//        currentLessonData.put("company", )
+
+//        currentLessonRef.add(currentLessonData)
+//                .addOnSuccessListener(documentReference -> {
+//                    // Update isEnrolled status immediately
+//                    isEnrolled = true;
+//                    btnEnroll.setVisibility(View.GONE);
+//                    CLbtn.setVisibility(View.GONE);
+//
+//                    Toast.makeText(getContext(), "Successfully enrolled in the lesson!", Toast.LENGTH_SHORT).show();
+//
+//                    // Notify the adapter to update
+//                    chapterAdapter.notifyDataSetChanged();
+//                })
+//                .addOnFailureListener(e ->
+//                        Toast.makeText(getContext(), "Failed to enroll in the lesson.", Toast.LENGTH_SHORT).show()
+//                );
     }
 
 
