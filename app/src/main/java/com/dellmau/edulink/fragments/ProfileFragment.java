@@ -25,7 +25,7 @@ import android.widget.Toast;
 
 import com.dellmau.edulink.R;
 import com.dellmau.edulink.activities.LoginActivity;
-import com.dellmau.edulink.models.User;
+import com.dellmau.edulink.models.Student;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -172,7 +172,7 @@ public class ProfileFragment extends Fragment {
             if (task.isSuccessful()) {
                 DocumentSnapshot documentSnapshot = task.getResult();
                 if (documentSnapshot != null && documentSnapshot.exists()) {
-                    User user = documentSnapshot.toObject(User.class);
+                    Student user = documentSnapshot.toObject(Student.class);
                     if (user != null) {
                         tvUsername.setText(user.getUsername());
                         tvPoints.setText(user.getXp() + "\nPoints");

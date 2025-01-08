@@ -157,7 +157,7 @@ public class CommentFragment extends Fragment {
             }
 
             String userID = currentUser.getUid();
-            String username = currentUser.getDisplayName() != null ? currentUser.getDisplayName() : "Unknown User";
+            String username = currentUser.getDisplayName() != null ? currentUser.getDisplayName() : "Unknown Student";
             String avatarURL = currentUser.getPhotoUrl() != null ? currentUser.getPhotoUrl().toString() : "";
             long timestamp = System.currentTimeMillis();
 
@@ -221,7 +221,7 @@ public class CommentFragment extends Fragment {
 
             @Override
             public void onFailure(Exception e) {
-                usernamePost.setText("Unknown User");
+                usernamePost.setText("Unknown Student");
                 avatarPost.setImageResource(R.drawable.gradient_background);
             }
         });

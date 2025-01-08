@@ -18,7 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dellmau.edulink.R;
-import com.dellmau.edulink.models.User;
+import com.dellmau.edulink.models.Student;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -84,7 +84,7 @@ public class FeedbackFragment extends Fragment {
             if (task.isSuccessful()) {
                 DocumentSnapshot documentSnapshot = task.getResult();
                 if (documentSnapshot != null && documentSnapshot.exists()) {
-                    User user = documentSnapshot.toObject(User.class);
+                    Student user = documentSnapshot.toObject(Student.class);
                     if (user != null) {
                         // Display user details
                         tvUsername.setText(user.getUsername());
