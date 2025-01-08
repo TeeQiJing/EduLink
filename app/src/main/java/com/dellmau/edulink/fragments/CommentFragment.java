@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,6 +55,7 @@ public class CommentFragment extends Fragment {
     private ImageButton btnBack;
     private EditText inputComment,forSubmission;
     private Button submit_review_btn,postLikes,postComments;
+    private LinearLayout lecturerSkill, studentSkill;
 
     public CommentFragment() {
         // Required empty public constructor
@@ -105,6 +107,11 @@ public class CommentFragment extends Fragment {
         forSubmission.setVisibility(View.GONE);
         submissionLink.setVisibility(View.GONE);
         submit_review_btn = view.findViewById(R.id.submit_review_btn);
+        lecturerSkill = view.findViewById(R.id.lecturerSkills);
+        studentSkill = view.findViewById(R.id.studentSkills);
+        lecturerSkill.setVisibility(View.GONE);
+        studentSkill.setVisibility(View.GONE);
+
 
         loadUpperPost(post);
         String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -120,6 +127,13 @@ public class CommentFragment extends Fragment {
                             Log.d("UserCheck", "User found in employee table");
                             forSubmission.setVisibility(View.GONE);
                             submissionLink.setVisibility(View.VISIBLE);
+                            lecturerSkill.setVisibility(View.VISIBLE);
+                            studentSkill.setVisibility(View.VISIBLE);
+                            List<String> linkArr = post.getLinkSubmitted();
+                            StringBuilder sb=new StringBuilder();
+                            for(int i=0;i<linkArr.size();i++){
+                                sb.append(linkArr.get(i)+"\n");
+                            }submissionLink.setText(sb.toString());
                             submit_review_btn.setText("Review");
                             submit_review_btn.setOnClickListener(v ->{
 
