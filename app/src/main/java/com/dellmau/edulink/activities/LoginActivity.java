@@ -1,6 +1,7 @@
 package com.dellmau.edulink.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -87,12 +88,21 @@ public class LoginActivity extends AppCompatActivity {
     private void checkUserRole(String userId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+        SharedPreferences sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE);
+//        SharedPreferences.Editor editor = sharedPreferences.edit();
+//        editor.putString("user_role", userRole);
+//        editor.apply();
+
         // Check 'students' collection
         db.collection("student").document(userId).get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult().exists()) {
                         // User is a student
                         updateLoginStreak();
+
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("user_role", "Student");
+                        editor.apply();
                         Toast.makeText(this, "Student Logged In.", Toast.LENGTH_SHORT).show();
 
                         startActivity(new Intent(getApplicationContext(), MainActivity.class));
@@ -103,6 +113,10 @@ public class LoginActivity extends AppCompatActivity {
                                 .addOnCompleteListener(task2 -> {
                                     if (task2.isSuccessful() && task2.getResult().exists()) {
                                         updateLoginStreak();
+
+                                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                                        editor.putString("user_role", "Educator");
+                                        editor.apply();
                                         Toast.makeText(this, "Educator Logged In.", Toast.LENGTH_SHORT).show();
                                         // User is an Educator
                                         startActivity(new Intent(getApplicationContext(), MainActivity.class));
@@ -113,6 +127,9 @@ public class LoginActivity extends AppCompatActivity {
                                                 .addOnCompleteListener(task3 -> {
                                                     if (task3.isSuccessful() && task3.getResult().exists()) {
                                                         updateLoginStreak();
+                                                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                                                        editor.putString("user_role", "Employer");
+                                                        editor.apply();
                                                         // User is an Employer
                                                         Toast.makeText(this, "Employer Logged In.", Toast.LENGTH_SHORT).show();
                                                         startActivity(new Intent(getApplicationContext(), MainActivity.class));

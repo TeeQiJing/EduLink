@@ -79,6 +79,10 @@ dependencies {
     // Bcrypt
     implementation("org.mindrot:jbcrypt:0.4")
 
+//    implementation("com.github.pengrad:echarts-android:1.9.0")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+
 
 
     // For loading images

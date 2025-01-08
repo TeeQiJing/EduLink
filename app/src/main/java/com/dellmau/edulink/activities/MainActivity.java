@@ -17,6 +17,7 @@ import com.dellmau.edulink.fragments.LeaderboardFragment;
 import com.dellmau.edulink.fragments.LearnFragment;
 import com.dellmau.edulink.fragments.LessonFragment;
 import com.dellmau.edulink.fragments.ProfileFragment;
+import com.dellmau.edulink.fragments.RadarFragment;
 import com.dellmau.edulink.models.PopularLessonCard;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
 
     private ProfileFragment profileFragment;
+    private RadarFragment radarFragment;
     private LearnFragment learnFragment;
     private CommunityFragment communityFragment;
     private LeaderboardFragment leaderboardFragment;
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         leaderboardFragment = new LeaderboardFragment();
         chatFragment = new ChatFragment();
         contentFragment = new ContentFragment();
+        radarFragment = new RadarFragment();
 
         // Load the default fragment
         loadFragment(companyFragment);
