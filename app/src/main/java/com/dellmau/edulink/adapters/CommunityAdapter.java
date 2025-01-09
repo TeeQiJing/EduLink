@@ -68,7 +68,9 @@ public class CommunityAdapter extends RecyclerView.Adapter<CommunityAdapter.Post
 
         holder.postTime.setText("· " + post.getTimeAgo());
         holder.postTitle.setText(post.getTitle());
-        holder.postContent.setText(post.getContent());
+//        holder.postContent.setText(post.getContent());
+        holder.postContent.setText(post.getContent().replace("\\n", "\n"));
+
         holder.postLikes.setText(String.valueOf(post.getLikedBy().size()));
         holder.lecturerSkillTV.setText(post.getLecturerSkills().toString());
         holder.studentSkillTV.setText(post.getStudentSkills().toString());
