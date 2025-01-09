@@ -75,6 +75,12 @@ public class FeedbackFragment extends Fragment {
         etFeedback = rootView.findViewById(R.id.etFeedback);
         btnSubmitFeedback = rootView.findViewById(R.id.btnSubmitFeedback);
 
+        Spinner feedbackTypeSpinner = rootView.findViewById(R.id.spinnerFeedbackType);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.feedback_types, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        feedbackTypeSpinner.setAdapter(adapter);
+
 
         Toast.makeText(getActivity(), "User Role: " + user_role, Toast.LENGTH_SHORT).show();
 
